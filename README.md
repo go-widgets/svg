@@ -32,31 +32,52 @@ pixelated`. The result:
 
 ## Use
 
+The root package works against any RGBA byte producer:
+
 ```go
 import (
     "os"
     "github.com/go-widgets/svg"
+)
+
+surface := make([]byte, 4*w*h)  // fill with anything
+// ...your draw code here...
+
+f, _ := os.Create("out.svg")
+defer f.Close()
+svg.Snapshot(f, surface, w, h, "my image")
+```
+
+For go-widgets/toolkit widgets specifically, the sibling
+[`widget`](./widget) subpackage removes the manual
+`make + Draw + Snapshot` dance:
+
+```go
+import (
+    "os"
+    "github.com/go-widgets/svg/widget"
     "github.com/go-widgets/toolkit"
 )
 
-func main() {
-    w, h := 200, 40
-    surface := make([]byte, 4*w*h)
+btn := toolkit.NewButton("Click me", nil)
+btn.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 40})
 
-    btn := toolkit.NewButton("Click me", nil)
-    btn.SetBounds(toolkit.Rect{X: 0, Y: 0, W: w, H: h})
-    btn.Draw(surface, w, toolkit.DefaultLight())
+f, _ := os.Create("button.svg")
+defer f.Close()
+widget.Snapshot(f, btn, 200, 40, toolkit.DefaultLight(), "widget: button")
 
-    f, _ := os.Create("button.svg")
-    defer f.Close()
-    svg.Snapshot(f, surface, w, h, "widget: button")
-}
+// Or a raw PNG (no SVG envelope):
+p, _ := os.Create("button.png")
+defer p.Close()
+widget.PNG(p, btn, 200, 40, toolkit.DefaultLight())
 ```
 
-The `label` argument (last positional) becomes the SVG's `<title>`
-+ `aria-label` for a11y + previewer tooltips. Pass `""` to omit.
+The `label` argument on `Snapshot` becomes the SVG's `<title>` +
+`aria-label` for a11y + previewer tooltips. Pass `""` to omit.
 
 ## API
+
+Root package (`svg`):
 
 ```
 func Snapshot(w io.Writer, surface []byte, width, height int, label string) (int, error)
@@ -70,6 +91,22 @@ func Snapshot(w io.Writer, surface []byte, width, height int, label string) (int
   `label` (both inside `<title>` and in the `aria-label`
   attribute), so a label containing `<b>&"'</b>` remains valid
   XML.
+
+Widget subpackage (`svg/widget`):
+
+```
+func Snapshot(w io.Writer, wg toolkit.Widget, width, height int, theme *toolkit.Theme, label string) (int, error)
+func PNG(w io.Writer, wg toolkit.Widget, width, height int, theme *toolkit.Theme) (int, error)
+```
+
+- Renders `wg` into a fresh `width×height` RGBA surface via
+  `wg.Draw(surface, width, theme)`, then serialises. `Snapshot`
+  wraps in an SVG envelope; `PNG` emits raw PNG bytes.
+- Errors on non-positive dimensions, nil widget, nil theme.
+- Split into a subpackage so the root `svg` stays dep-free — a
+  consumer that only uses `svg.Snapshot([]byte)` for a home-grown
+  pixel producer does not pull go-widgets/toolkit into its
+  module graph.
 
 ## License
 
