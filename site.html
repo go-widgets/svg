@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>go-widgets/svg — widget snapshot gallery</title>
+<meta name="description" content="Every go-widgets/toolkit widget rendered via svg/cmd/gallery-render into a self-contained SVG + a raw PNG side-by-side.">
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1b1f24; --muted: #57606a; --card: #f6f8fa;
+    --border: #d8dbe6; --accent: #0d9488; --accent-2: #14b8a6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+      --bg: #0b0d12; --fg: #e6e8f0; --muted: #9aa0b4; --card: #141826;
+      --border: #262c40; --accent: #14b8a6; --accent-2: #2dd4bf;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0b0d12; --fg: #e6e8f0; --muted: #9aa0b4; --card: #141826;
+    --border: #262c40; --accent: #14b8a6; --accent-2: #2dd4bf;
+  }
+  .theme-toggle {
+    position: fixed; top: 14px; right: 14px; z-index: 10;
+    font: inherit; font-size: .8rem; cursor: pointer; padding: 6px 12px;
+    color: var(--fg); background: var(--card); border: 1px solid var(--border); border-radius: 999px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 40px 20px; }
+  h1 { font-size: 1.7rem; letter-spacing: -.02em; margin: 0 0 6px; }
+  .tagline { color: var(--muted); margin: 0 0 30px; }
+  h2 { font-size: 1.2rem; margin: 30px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 1rem; margin: 20px 0 6px; color: var(--accent); font-family: ui-monospace, Menlo, Consolas, monospace; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .card img { display: block; max-width: 100%; height: auto; border: 1px solid var(--border); background: #ffffff; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+  .row figure { margin: 0; text-align: center; }
+  .row figcaption { color: var(--muted); font-size: .78rem; padding-top: 4px; font-family: ui-monospace, Menlo, Consolas, monospace; }
+  .row img { background: transparent; border: 0; padding: 4px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; }
+  a { color: var(--accent); }
+  code { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 1px 6px; font-size: .9em; }
+  footer { color: var(--muted); text-align: center; padding: 40px 0 20px; font-size: .85rem; }
+</style>
+<script>
+  (function(){var m=localStorage.getItem('theme');if(m&&m!=='system')document.documentElement.setAttribute('data-theme',m);})();
+</script>
+</head>
+<body>
+  <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle light, dark or system theme"><span id="theme-label">🖥️ System</span></button>
+  <div class="wrap">
+    <h1>go-widgets/svg gallery</h1>
+    <p class="tagline">Every <a href="https://github.com/go-widgets/toolkit">toolkit</a> widget rendered by <a href="https://github.com/go-widgets/svg/tree/main/cmd/gallery-render">cmd/gallery-render</a> as a self-contained SVG (via <code>svg/widget.Snapshot</code>) + a raw PNG (via <code>svg/widget.PNG</code>) — side by side so you can eyeball that the vector envelope is bit-exact.</p>
+
+    <h2>Light theme</h2>
+    <div class="grid" id="grid-light"></div>
+
+    <h2>Dark theme</h2>
+    <div class="grid" id="grid-dark"></div>
+
+  </div>
+  <footer>
+    <p>
+      <a href="https://github.com/go-widgets/svg">svg repo</a> ·
+      <a href="https://github.com/go-widgets">go-widgets</a> ·
+      generated on every push to <code>main</code>
+    </p>
+  </footer>
+  <script>
+  (function(){
+    var order=['system','light','dark'], root=document.documentElement;
+    var labels={system:'🖥️ System',light:'☀️ Light',dark:'🌙 Dark'};
+    function apply(m){ if(m==='system'){root.removeAttribute('data-theme');}else{root.setAttribute('data-theme',m);} localStorage.setItem('theme',m); var el=document.getElementById('theme-label'); if(el)el.textContent=labels[m]; }
+    var mode=localStorage.getItem('theme')||'system'; apply(mode);
+    var btn=document.getElementById('theme-toggle');
+    if(btn) btn.addEventListener('click',function(){ mode=order[(order.indexOf(mode)+1)%order.length]; apply(mode); });
+
+    var widgets=['button','label','entry','checkbutton','progressbar','listbox','treeview'];
+    function build(grid, dir){
+      var g=document.getElementById(grid);
+      widgets.forEach(function(w){
+        var card=document.createElement('article');
+        card.className='card';
+        card.innerHTML =
+          '<h3>'+w+'</h3>'+
+          '<div class="row">'+
+          '  <figure><img src="'+dir+'/'+w+'.svg" alt="'+w+' SVG"><figcaption>svg</figcaption></figure>'+
+          '  <figure><img src="'+dir+'/'+w+'.png" alt="'+w+' PNG"><figcaption>png</figcaption></figure>'+
+          '</div>';
+        g.appendChild(card);
+      });
+    }
+    build('grid-light','gallery');
+    build('grid-dark','gallery-dark');
+  })();
+  </script>
+</body>
+</html>

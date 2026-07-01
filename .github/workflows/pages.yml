@@ -1,0 +1,49 @@
+name: pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26.4"
+          check-latest: true
+          cache: true
+
+      - name: Stage site + render every widget as SVG + PNG
+        env:
+          GOWORK: "off"
+          CGO_ENABLED: "0"
+        run: |
+          mkdir -p site/gallery
+          # Copy the hand-written index shell over.
+          cp site.html site/index.html
+          # Render every widget kind as SVG + PNG into site/gallery/
+          go run ./cmd/gallery-render -out site/gallery -theme light
+          go run ./cmd/gallery-render -out site/gallery-dark -theme dark
+          ls -la site/gallery | head
+          ls -la site/gallery-dark | head
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/
+
+      - uses: actions/deploy-pages@v4
