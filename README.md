@@ -1,5 +1,12 @@
 # go-widgets/svg
 
+[![CI](https://github.com/go-widgets/svg/actions/workflows/ci.yml/badge.svg)](https://github.com/go-widgets/svg/actions/workflows/ci.yml)
+[![release](https://img.shields.io/github/v/release/go-widgets/svg?display_name=tag&sort=semver&color=0d9488)](https://github.com/go-widgets/svg/releases)
+[![pkg.go.dev](https://img.shields.io/badge/pkg.go.dev-svg-007d9c?logo=go&logoColor=white)](https://pkg.go.dev/github.com/go-widgets/svg)
+![coverage](https://img.shields.io/badge/coverage-100%25-1a7f37)
+[![gallery](https://img.shields.io/badge/live-gallery-14b8a6)](https://go-widgets.github.io/svg/)
+[![license](https://img.shields.io/badge/license-BSD--3--Clause-blue)](./LICENSE)
+
 `Snapshot`: turn any RGBA byte buffer (the output of a
 [go-widgets/toolkit](https://github.com/go-widgets/toolkit) widget
 composition, or any other pixel producer) into a portable,
@@ -79,7 +86,7 @@ The `label` argument on `Snapshot` becomes the SVG's `<title>` +
 
 Root package (`svg`):
 
-```
+```go
 func Snapshot(w io.Writer, surface []byte, width, height int, label string) (int, error)
 ```
 
@@ -94,7 +101,7 @@ func Snapshot(w io.Writer, surface []byte, width, height int, label string) (int
 
 Widget subpackage (`svg/widget`):
 
-```
+```go
 func Snapshot(w io.Writer, wg toolkit.Widget, width, height int, theme *toolkit.Theme, label string) (int, error)
 func PNG(w io.Writer, wg toolkit.Widget, width, height int, theme *toolkit.Theme) (int, error)
 ```
