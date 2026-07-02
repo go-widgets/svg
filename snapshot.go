@@ -22,7 +22,7 @@
 //	surface := make([]byte, 4*w*h)
 //	btn := toolkit.NewButton("Click me", nil)
 //	btn.SetBounds(toolkit.Rect{X: 0, Y: 0, W: w, H: h})
-//	btn.Draw(surface, w, toolkit.DefaultLight())
+//	btn.Draw(painter.NewPixelPainter(surface, w, h), toolkit.DefaultLight())
 //	f, _ := os.Create("button.svg")
 //	svg.Snapshot(f, surface, w, h, "widget: button")
 package svg

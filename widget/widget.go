@@ -26,14 +26,15 @@ import (
 	"image/png"
 	"io"
 
+	"github.com/go-widgets/painter"
 	"github.com/go-widgets/svg"
 	"github.com/go-widgets/toolkit"
 )
 
-// Snapshot renders wg into a fresh width×height RGBA surface via
-// wg.Draw(surface, width, theme), then wraps the result in an SVG
-// envelope via svg.Snapshot. The label lands in the SVG's <title>
-// (pass "" to omit).
+// Snapshot renders wg into a fresh width×height RGBA surface via a
+// painter.PixelPainter that wg.Draw writes through, then wraps the
+// result in an SVG envelope via svg.Snapshot. The label lands in
+// the SVG's <title> (pass "" to omit).
 //
 // Returns the number of bytes written + the first error, mirroring
 // the io.Writer convention.
@@ -79,6 +80,6 @@ func render(wg toolkit.Widget, width, height int, theme *toolkit.Theme) ([]byte,
 		return nil, fmt.Errorf("svg/widget: theme is nil")
 	}
 	surface := make([]byte, 4*width*height)
-	wg.Draw(surface, width, theme)
+	wg.Draw(painter.NewPixelPainter(surface, width, height), theme)
 	return surface, nil
 }
