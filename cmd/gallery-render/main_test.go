@@ -6,6 +6,7 @@ package main
 
 import (
 	"errors"
+	"image/png"
 	"io"
 	"os"
 	"path/filepath"
@@ -80,6 +81,83 @@ func TestRenderWritesAllPairsIntoDir(t *testing.T) {
 	if len(pngBytes) < 8 || pngBytes[0] != 0x89 || string(pngBytes[1:4]) != "PNG" {
 		t.Fatal("button.png missing PNG magic")
 	}
+}
+
+// TestRenderPNGShowsTextForTextBearingWidgets guards against the class
+// of bug that shipped in the (since-fixed) toolkit v0.6.0..v0.6.1
+// window, where Label.Draw and Button.Draw stopped rendering their
+// text after the Painter refactor. The existing "file exists + PNG
+// magic" checks did not catch it: an empty-body PNG is still a
+// well-formed PNG.
+//
+// The specific bug variant Label hit was that Draw() rendered only a
+// stray baseline underline — one row of drawn pixels — instead of
+// glyphs across multiple rows. Text at painter.GlyphHeight = 7 covers
+// several rows once composed; the tell-tale signal is therefore
+// "how many rows contain at least one drawn pixel." This test asserts
+// >= 3 distinct drawn-pixel rows on each widget whose entries() Make()
+// supplies a non-empty text field.
+//
+// The "drawn pixel" filter is alpha > 0: svgwidget.render() allocates
+// a zeroed RGBA buffer, so pixels the widget never touched still have
+// alpha 0 (fully transparent). Anything the widget actually wrote —
+// via a painter primitive — lands with alpha 255.
+func TestRenderPNGShowsTextForTextBearingWidgets(t *testing.T) {
+	dir := t.TempDir()
+	theme := toolkit.DefaultLight()
+	if err := render(dir, theme); err != nil {
+		t.Fatalf("render: %v", err)
+	}
+	// Widgets whose Make() supplies a non-empty text label — the ones
+	// we can meaningfully assert "should contain visible glyph pixels".
+	textBearing := map[string]bool{
+		"button": true,
+		"label":  true,
+	}
+	// A single-row underline (the v0.6.0 label bug) produces exactly
+	// one drawn row. Text glyphs at painter.GlyphHeight = 7 produce
+	// ~5-7 non-empty rows. Three is comfortably above the underline
+	// signal and well below the glyph-mass signal.
+	const minDrawnRows = 3
+	for _, e := range entries() {
+		if !textBearing[e.Name] {
+			continue
+		}
+		rows := countDrawnPixelRows(t, filepath.Join(dir, e.Name+".png"))
+		if rows < minDrawnRows {
+			t.Fatalf("%s.png has %d rows of drawn (alpha > 0) pixels, want >= %d — widget's text likely regressed to a stray baseline/underline",
+				e.Name, rows, minDrawnRows)
+		}
+	}
+}
+
+// countDrawnPixelRows decodes a PNG and returns the number of rows
+// containing at least one pixel with alpha > 0 — i.e., a pixel the
+// widget's Draw call actually touched. Rows with only alpha-zero
+// pixels (fully transparent, buffer never written) don't count.
+func countDrawnPixelRows(t *testing.T, path string) int {
+	t.Helper()
+	f, err := os.Open(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	img, err := png.Decode(f)
+	if err != nil {
+		t.Fatalf("decode %s: %v", path, err)
+	}
+	bounds := img.Bounds()
+	rows := 0
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			_, _, _, a := img.At(x, y).RGBA()
+			if a > 0 {
+				rows++
+				break
+			}
+		}
+	}
+	return rows
 }
 
 func TestRenderErrorOnBadDir(t *testing.T) {
