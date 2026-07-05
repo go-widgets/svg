@@ -22,7 +22,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -30,9 +29,18 @@ import (
 	"github.com/go-widgets/toolkit"
 )
 
+// runFunc / osExit are dependency-injection seams so tests can drive
+// main()'s success and error branches without spawning a subprocess
+// or having log.Fatalf terminate the test binary.
+var (
+	runFunc = run
+	osExit  = os.Exit
+)
+
 func main() {
-	if err := run(os.Args[1:], os.Stdout, os.Stderr); err != nil {
-		log.Fatalf("gallery-render: %v", err)
+	if err := runFunc(os.Args[1:], os.Stdout, os.Stderr); err != nil {
+		fmt.Fprintf(os.Stderr, "gallery-render: %v\n", err)
+		osExit(1)
 	}
 }
 

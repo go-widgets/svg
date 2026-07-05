@@ -5,6 +5,8 @@
 package main
 
 import (
+	"errors"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -12,6 +14,8 @@ import (
 
 	"github.com/go-widgets/toolkit"
 )
+
+var errBoom = errors.New("boom")
 
 func TestEntriesShape(t *testing.T) {
 	got := entries()
@@ -138,5 +142,49 @@ func TestRunMkdirError(t *testing.T) {
 	// Point -out at a path under a regular file → mkdir errors.
 	if err := run([]string{"-out", filepath.Join(file, "sub")}, &stdout, &stderr); err == nil {
 		t.Fatal("mkdir under regular file should error")
+	}
+}
+
+// TestRunRenderError covers the run() branch where mkdir succeeds
+// but the subsequent render() call fails — a read-only output dir
+// where MkdirAll(existingDir) is a no-op but writeFile can't create
+// files inside.
+func TestRunRenderError(t *testing.T) {
+	parent := t.TempDir()
+	subdir := filepath.Join(parent, "readonly")
+	if err := os.Mkdir(subdir, 0o500); err != nil {
+		t.Fatal(err)
+	}
+	// Restore write perm so t.TempDir cleanup can remove the subdir.
+	t.Cleanup(func() { _ = os.Chmod(subdir, 0o700) })
+	var stdout, stderr strings.Builder
+	if err := run([]string{"-out", subdir}, &stdout, &stderr); err == nil {
+		t.Fatal("run into a read-only dir should surface a render error")
+	}
+}
+
+// TestMainSuccessPath drives main() through the runFunc/osExit seams so
+// the fatal branch is not actually taken and main() itself gets covered.
+func TestMainSuccessPath(t *testing.T) {
+	origRun, origExit := runFunc, osExit
+	defer func() { runFunc, osExit = origRun, origExit }()
+	exited := false
+	runFunc = func([]string, io.Writer, io.Writer) error { return nil }
+	osExit = func(int) { exited = true }
+	main()
+	if exited {
+		t.Fatal("main() should not have called osExit on success")
+	}
+}
+
+func TestMainErrorPath(t *testing.T) {
+	origRun, origExit := runFunc, osExit
+	defer func() { runFunc, osExit = origRun, origExit }()
+	got := -1
+	runFunc = func([]string, io.Writer, io.Writer) error { return errBoom }
+	osExit = func(code int) { got = code }
+	main()
+	if got != 1 {
+		t.Fatalf("main() called osExit(%d), want 1", got)
 	}
 }
