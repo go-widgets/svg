@@ -110,9 +110,16 @@ func TestRenderPNGShowsTextForTextBearingWidgets(t *testing.T) {
 	}
 	// Widgets whose Make() supplies a non-empty text label — the ones
 	// we can meaningfully assert "should contain visible glyph pixels".
+	// Anything whose Draw method is expected to write text goes here so
+	// a future "Draw forgot to render its text" regression trips one of
+	// these entries the same way v0.6.0's Label bug trips the label
+	// case.
 	textBearing := map[string]bool{
-		"button": true,
-		"label":  true,
+		"button":       true,
+		"label":        true,
+		"radiobutton":  true, // "Enable option"
+		"togglebutton": true, // "Muted"
+		"spinbutton":   true, // "42" (numeric value)
 	}
 	// A single-row underline (the v0.6.0 label bug) produces exactly
 	// one drawn row. Text glyphs at painter.GlyphHeight = 7 produce

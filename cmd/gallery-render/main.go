@@ -123,6 +123,22 @@ func entries() []entry {
 			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 160})
 			return t
 		}},
+		{"radiobutton", 200, 28, func() toolkit.Widget {
+			r := toolkit.NewRadioButton("Enable option")
+			r.Checked = true
+			r.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 28})
+			return r
+		}},
+		{"togglebutton", 200, 40, func() toolkit.Widget {
+			t := toolkit.NewToggleButton("Muted", true)
+			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 40})
+			return t
+		}},
+		{"spinbutton", 200, 32, func() toolkit.Widget {
+			s := toolkit.NewSpinButton(0, 100, 42, 1)
+			s.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 32})
+			return s
+		}},
 	}
 }
 
