@@ -218,6 +218,78 @@ func entries() []entry {
 			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 100})
 			return t
 		}},
+		{"avatar", 40, 40, func() toolkit.Widget {
+			a := toolkit.NewAvatar("DL")
+			a.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 40, H: 40})
+			return a
+		}},
+		{"skeleton", 240, 80, func() toolkit.Widget {
+			s := toolkit.NewSkeleton(toolkit.SkeletonText, 4)
+			s.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 80})
+			return s
+		}},
+		{"rating", 100, 20, func() toolkit.Widget {
+			r := toolkit.NewRating(3, 5)
+			r.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 100, H: 20})
+			return r
+		}},
+		{"toast", 260, 32, func() toolkit.Widget {
+			t := toolkit.NewToast("Copied to clipboard", toolkit.ToastSuccess)
+			t.Visible = true
+			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 32})
+			return t
+		}},
+		{"banner", 360, 32, func() toolkit.Widget {
+			b := toolkit.NewBanner("Software update available.")
+			b.ButtonLabel = "Install"
+			b.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 360, H: 32})
+			return b
+		}},
+		{"popover", 200, 80, func() toolkit.Widget {
+			child := toolkit.NewLabel("Popover content")
+			child.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 180, H: 24})
+			p := toolkit.NewPopover(child)
+			p.Title = "Menu"
+			p.Visible = true
+			p.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 80})
+			return p
+		}},
+		{"actionrow", 320, 44, func() toolkit.Widget {
+			a := toolkit.NewActionRow("Language")
+			a.Subtitle = "English (US)"
+			a.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 44})
+			return a
+		}},
+		{"viewswitcher", 300, 32, func() toolkit.Widget {
+			v := toolkit.NewViewSwitcher([]string{"Inbox", "Sent", "Archive"}, 0)
+			v.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 300, H: 32})
+			return v
+		}},
+		{"chatbubble", 240, 40, func() toolkit.Widget {
+			c := toolkit.NewChatBubble("Hello, world!", toolkit.ChatFromUser)
+			c.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 40})
+			return c
+		}},
+		{"searchentry", 240, 28, func() toolkit.Widget {
+			s := toolkit.NewSearchEntry("query")
+			s.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 28})
+			return s
+		}},
+		{"diff", 280, 80, func() toolkit.Widget {
+			d := toolkit.NewDiff([]toolkit.DiffLine{
+				{Text: "package main", Kind: toolkit.DiffContext},
+				{Text: "old line", Kind: toolkit.DiffRemoved},
+				{Text: "new line", Kind: toolkit.DiffAdded},
+				{Text: "func main() {}", Kind: toolkit.DiffContext},
+			})
+			d.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 280, H: 80})
+			return d
+		}},
+		{"pagination", 260, 28, func() toolkit.Widget {
+			p := toolkit.NewPagination(2, 5)
+			p.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 28})
+			return p
+		}},
 	}
 }
 

@@ -133,6 +133,18 @@ func TestRenderPNGShowsTextForTextBearingWidgets(t *testing.T) {
 		"headerbar":    true, // "Files" + "~/Documents"
 		"table":        true, // headers + cell text
 		// switch is intentionally excluded — knob/track only, no text.
+		"avatar":       true, // "DL"
+		"rating":       true, // "*" glyphs
+		"toast":        true, // "Copied to clipboard"
+		"banner":       true, // "Software update available." + "Install"
+		"popover":      true, // "Menu" header + "Popover content" child
+		"actionrow":    true, // "Language" + "English (US)"
+		"viewswitcher": true, // "Inbox" / "Sent" / "Archive"
+		"chatbubble":   true, // "Hello, world!"
+		"searchentry":  true, // "query" + prefix + clear glyph
+		"diff":         true, // 4 diff lines
+		"pagination":   true, // "<", "1", "2", "3", "4", "5", ">"
+		// skeleton is intentionally excluded — placeholder bars only, no text.
 	}
 	// A single-row underline (the v0.6.0 label bug) produces exactly
 	// one drawn row. Text glyphs at painter.GlyphHeight = 7 produce
