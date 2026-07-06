@@ -146,6 +146,22 @@ func TestRenderPNGShowsTextForTextBearingWidgets(t *testing.T) {
 		"searchentry":  true, // "query" + prefix + clear glyph
 		"diff":         true, // 4 diff lines
 		"pagination":   true, // "<", "1", "2", "3", "4", "5", ">"
+		// v0.9.1 catalogue-completion additions
+		"calendar":      true, // day-of-week headers + numeric day cells
+		"colorchooser":  true, // "R", "G", "B" + "#0D9488"
+		"notebook":      true, // tab titles + body labels
+		"menubar":       true, // "File", "Edit", "View", "Help"
+		"menu":          true, // "New", "Open", "Save As...", "Quit"
+		"dialog":        true, // "Confirm action" title + body + "OK"
+		"messagedialog": true, // "Notice" title + message body
+		"frame":         true, // "framed content" child label
+		"hbox":          true, // "left" + "middle" + "right"
+		"vbox":          true, // "top" + "middle" + "bottom"
+		"grid":          true, // "a1" + "b1" + "a2" + "b2"
+		"hpaned":        true, // "left pane" + "right pane"
+		"vpaned":        true, // "top pane" + "bottom pane"
+		"scrollview":    true, // "Line one" ... multi-line TextView
+		// scale (no glyph), levelbar (no glyph), spinner (dots only) — skipped
 		// skeleton is intentionally excluded — placeholder bars only, no text.
 		"splitbutton":    true, // "Deploy" + arrow glyph
 		"iconbutton":     true, // "+"

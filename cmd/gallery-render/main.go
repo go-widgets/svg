@@ -355,6 +355,132 @@ func entries() []entry {
 			p.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 60, H: 60})
 			return p
 		}},
+		{"calendar", 240, 180, func() toolkit.Widget {
+			c := toolkit.NewCalendar(2026, 7, 6)
+			c.SetToday(2026, 7, 6)
+			c.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 180})
+			return c
+		}},
+		{"colorchooser", 260, 130, func() toolkit.Widget {
+			c := toolkit.NewColorChooser(toolkit.RGB(0x0d, 0x94, 0x88))
+			c.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 130})
+			return c
+		}},
+		{"scale", 200, 24, func() toolkit.Widget {
+			s := toolkit.NewScale(0, 100, 65)
+			s.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 24})
+			return s
+		}},
+		{"levelbar", 200, 20, func() toolkit.Widget {
+			l := toolkit.NewLevelBar(10)
+			l.Value = 7
+			l.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 20})
+			return l
+		}},
+		{"spinner", 32, 32, func() toolkit.Widget {
+			s := toolkit.NewSpinner()
+			s.Active = true
+			s.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 32, H: 32})
+			return s
+		}},
+		{"notebook", 320, 140, func() toolkit.Widget {
+			n := toolkit.NewNotebook()
+			n.AddTab("One", toolkit.NewLabel("first tab body"))
+			n.AddTab("Two", toolkit.NewLabel("second tab body"))
+			n.AddTab("Three", toolkit.NewLabel("third tab body"))
+			n.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 140})
+			return n
+		}},
+		{"menubar", 320, 24, func() toolkit.Widget {
+			m := toolkit.NewMenuBar()
+			m.Names = []string{"File", "Edit", "View", "Help"}
+			m.Menus = []*toolkit.Menu{
+				toolkit.NewMenu([]toolkit.MenuItem{{Label: "New"}, {Label: "Open"}}),
+				toolkit.NewMenu([]toolkit.MenuItem{{Label: "Copy"}, {Label: "Paste"}}),
+				toolkit.NewMenu([]toolkit.MenuItem{{Label: "Zoom in"}}),
+				toolkit.NewMenu([]toolkit.MenuItem{{Label: "About"}}),
+			}
+			m.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 24})
+			return m
+		}},
+		{"menu", 160, 90, func() toolkit.Widget {
+			m := toolkit.NewMenu([]toolkit.MenuItem{
+				{Label: "New"},
+				{Label: "Open"},
+				{Separator: true},
+				{Label: "Save As...", Submenu: toolkit.NewMenu(nil)},
+				{Label: "Quit", Shortcut: "Ctrl+Q"},
+			})
+			m.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 160, H: 90})
+			return m
+		}},
+		{"dialog", 300, 140, func() toolkit.Widget {
+			ok := toolkit.NewButton("OK", nil)
+			body := toolkit.NewLabel("dialog body content")
+			d := toolkit.NewDialog("Confirm action", body, ok)
+			d.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 300, H: 140})
+			return d
+		}},
+		{"messagedialog", 320, 140, func() toolkit.Widget {
+			d := toolkit.NewMessageDialog("Notice", "Operation completed successfully.", nil)
+			d.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 140})
+			return d
+		}},
+		{"frame", 240, 60, func() toolkit.Widget {
+			body := toolkit.NewLabel("framed content")
+			body.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 60})
+			f := toolkit.NewFrame(body)
+			f.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 60})
+			return f
+		}},
+		{"hbox", 320, 32, func() toolkit.Widget {
+			h := toolkit.NewHBox()
+			h.Spacing = 8
+			h.Append(toolkit.NewLabel("left"))
+			h.Append(toolkit.NewLabel("middle"))
+			h.Append(toolkit.NewLabel("right"))
+			h.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 32})
+			return h
+		}},
+		{"vbox", 200, 80, func() toolkit.Widget {
+			v := toolkit.NewVBox()
+			v.Spacing = 4
+			v.Append(toolkit.NewLabel("top"))
+			v.Append(toolkit.NewLabel("middle"))
+			v.Append(toolkit.NewLabel("bottom"))
+			v.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 80})
+			return v
+		}},
+		{"grid", 220, 60, func() toolkit.Widget {
+			g := toolkit.NewGrid(2, 2)
+			g.Attach(toolkit.NewLabel("a1"), 0, 0)
+			g.Attach(toolkit.NewLabel("b1"), 1, 0)
+			g.Attach(toolkit.NewLabel("a2"), 0, 1)
+			g.Attach(toolkit.NewLabel("b2"), 1, 1)
+			g.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 220, H: 60})
+			return g
+		}},
+		{"hpaned", 320, 60, func() toolkit.Widget {
+			left := toolkit.NewLabel("left pane")
+			right := toolkit.NewLabel("right pane")
+			p := toolkit.NewHPaned(left, right)
+			p.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 60})
+			return p
+		}},
+		{"vpaned", 240, 100, func() toolkit.Widget {
+			top := toolkit.NewLabel("top pane")
+			bottom := toolkit.NewLabel("bottom pane")
+			p := toolkit.NewVPaned(top, bottom)
+			p.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 100})
+			return p
+		}},
+		{"scrollview", 240, 80, func() toolkit.Widget {
+			body := toolkit.NewTextView("Line one\nLine two\nLine three\nLine four\nLine five")
+			body.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 220, H: 120})
+			sv := toolkit.NewScrollView(body)
+			sv.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 80})
+			return sv
+		}},
 	}
 }
 
