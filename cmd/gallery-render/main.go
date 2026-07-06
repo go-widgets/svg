@@ -290,6 +290,58 @@ func entries() []entry {
 			p.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 28})
 			return p
 		}},
+		{"splitbutton", 200, 32, func() toolkit.Widget {
+			s := toolkit.NewSplitButton("Deploy", nil)
+			s.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 32})
+			return s
+		}},
+		{"iconbutton", 32, 32, func() toolkit.Widget {
+			b := toolkit.NewIconButton("+", nil)
+			b.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 32, H: 32})
+			return b
+		}},
+		{"stat", 160, 80, func() toolkit.Widget {
+			s := toolkit.NewStat("Requests / min", "12,845")
+			s.Change = "+8.3%"
+			s.Trend = toolkit.StatUp
+			s.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 160, H: 80})
+			return s
+		}},
+		{"timeline", 260, 120, func() toolkit.Widget {
+			t := toolkit.NewTimeline([]toolkit.TimelineEvent{
+				{Title: "PR opened", Kind: toolkit.TimelineDefault},
+				{Title: "Reviewed", Detail: "LGTM with nits", Kind: toolkit.TimelineSuccess},
+				{Title: "Build failed", Kind: toolkit.TimelineError},
+				{Title: "Force-pushed", Kind: toolkit.TimelineWarning},
+			})
+			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 120})
+			return t
+		}},
+		{"dropzone", 260, 100, func() toolkit.Widget {
+			d := toolkit.NewDropZone("Drop files to upload")
+			d.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 100})
+			return d
+		}},
+		{"chip", 120, 24, func() toolkit.Widget {
+			c := toolkit.NewChip("frontend")
+			c.Closable = true
+			c.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 120, H: 24})
+			return c
+		}},
+		{"formfield", 260, 72, func() toolkit.Widget {
+			e := toolkit.NewEntry("value")
+			e.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 24})
+			f := toolkit.NewFormField("Username", e)
+			f.Help = "at least 3 characters"
+			f.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 72})
+			return f
+		}},
+		{"progresscircle", 60, 60, func() toolkit.Widget {
+			p := toolkit.NewProgressCircle()
+			p.Fraction = 0.66
+			p.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 60, H: 60})
+			return p
+		}},
 	}
 }
 

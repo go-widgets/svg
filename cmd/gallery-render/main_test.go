@@ -145,6 +145,14 @@ func TestRenderPNGShowsTextForTextBearingWidgets(t *testing.T) {
 		"diff":         true, // 4 diff lines
 		"pagination":   true, // "<", "1", "2", "3", "4", "5", ">"
 		// skeleton is intentionally excluded — placeholder bars only, no text.
+		"splitbutton":    true, // "Deploy" + arrow glyph
+		"iconbutton":     true, // "+"
+		"stat":           true, // "Requests / min" + "12,845" + "+8.3%"
+		"timeline":       true, // event titles + details
+		"dropzone":       true, // "Drop files to upload"
+		"chip":           true, // "frontend" + close glyph
+		"formfield":      true, // "Username" + help caption
+		"progresscircle": true, // "66%" centered text
 	}
 	// A single-row underline (the v0.6.0 label bug) produces exactly
 	// one drawn row. Text glyphs at painter.GlyphHeight = 7 produce
