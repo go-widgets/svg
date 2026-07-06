@@ -139,6 +139,28 @@ func entries() []entry {
 			s.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 32})
 			return s
 		}},
+		{"statusbar", 320, 24, func() toolkit.Widget {
+			s := toolkit.NewStatusbar([]string{"Ready", "Line 42", "UTF-8"})
+			s.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 24})
+			return s
+		}},
+		{"textview", 240, 80, func() toolkit.Widget {
+			tv := toolkit.NewTextView("Hello, world.\nSecond line.\nThird line.")
+			tv.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 80})
+			return tv
+		}},
+		{"notification", 260, 32, func() toolkit.Widget {
+			n := toolkit.NewNotification("Saved successfully")
+			n.Visible = true
+			n.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 32})
+			return n
+		}},
+		{"tooltip", 160, 20, func() toolkit.Widget {
+			t := toolkit.NewTooltip("Undo (Ctrl+Z)")
+			t.Visible = true
+			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 160, H: 20})
+			return t
+		}},
 	}
 }
 

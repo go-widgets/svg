@@ -120,6 +120,10 @@ func TestRenderPNGShowsTextForTextBearingWidgets(t *testing.T) {
 		"radiobutton":  true, // "Enable option"
 		"togglebutton": true, // "Muted"
 		"spinbutton":   true, // "42" (numeric value)
+		"statusbar":    true, // "Ready" / "Line 42" / "UTF-8"
+		"textview":     true, // multi-line prose
+		"notification": true, // "Saved successfully"
+		"tooltip":      true, // "Undo (Ctrl+Z)"
 	}
 	// A single-row underline (the v0.6.0 label bug) produces exactly
 	// one drawn row. Text glyphs at painter.GlyphHeight = 7 produce
