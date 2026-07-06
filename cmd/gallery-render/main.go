@@ -161,6 +161,63 @@ func entries() []entry {
 			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 160, H: 20})
 			return t
 		}},
+		{"switch", 60, 28, func() toolkit.Widget {
+			s := toolkit.NewSwitch(true)
+			s.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 60, H: 28})
+			return s
+		}},
+		{"badge", 60, 20, func() toolkit.Widget {
+			b := toolkit.NewBadge("42")
+			b.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 60, H: 20})
+			return b
+		}},
+		{"kbd", 80, 24, func() toolkit.Widget {
+			k := toolkit.NewKbd("Ctrl+K")
+			k.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 80, H: 24})
+			return k
+		}},
+		{"alert", 320, 48, func() toolkit.Widget {
+			a := toolkit.NewAlert("Configuration saved successfully.", toolkit.AlertSuccess)
+			a.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 48})
+			return a
+		}},
+		{"card", 240, 140, func() toolkit.Widget {
+			c := toolkit.NewCard("Card title", "Body line one.\nBody line two.\nBody line three.", "footer note")
+			c.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 140})
+			return c
+		}},
+		{"breadcrumbs", 320, 24, func() toolkit.Widget {
+			b := toolkit.NewBreadcrumbs([]string{"home", "projects", "widgets", "toolkit"})
+			b.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 24})
+			return b
+		}},
+		{"steps", 320, 48, func() toolkit.Widget {
+			s := toolkit.NewSteps([]string{"Plan", "Build", "Test", "Ship"}, 2)
+			s.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 48})
+			return s
+		}},
+		{"headerbar", 360, 40, func() toolkit.Widget {
+			h := toolkit.NewHeaderBar("Files")
+			h.Subtitle = "~/Documents"
+			h.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 360, H: 40})
+			return h
+		}},
+		{"table", 320, 100, func() toolkit.Widget {
+			cols := []toolkit.TableColumn{
+				{Title: "Name", Width: 120},
+				{Title: "Size", Width: 60},
+				{Title: "Kind"},
+			}
+			rows := [][]string{
+				{"README.md", "1.2 KB", "text"},
+				{"main.go", "4.8 KB", "source"},
+				{"assets", "-", "dir"},
+			}
+			t := toolkit.NewTable(cols, rows)
+			t.Selected = 1
+			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 100})
+			return t
+		}},
 	}
 }
 

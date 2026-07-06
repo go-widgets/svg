@@ -124,6 +124,15 @@ func TestRenderPNGShowsTextForTextBearingWidgets(t *testing.T) {
 		"textview":     true, // multi-line prose
 		"notification": true, // "Saved successfully"
 		"tooltip":      true, // "Undo (Ctrl+Z)"
+		"badge":        true, // "42"
+		"kbd":          true, // "Ctrl+K"
+		"alert":        true, // "Configuration saved successfully."
+		"card":         true, // title + body + footer
+		"breadcrumbs":  true, // "home > projects > widgets > toolkit"
+		"steps":        true, // "Plan", "Build", "Test", "Ship" captions
+		"headerbar":    true, // "Files" + "~/Documents"
+		"table":        true, // headers + cell text
+		// switch is intentionally excluded — knob/track only, no text.
 	}
 	// A single-row underline (the v0.6.0 label bug) produces exactly
 	// one drawn row. Text glyphs at painter.GlyphHeight = 7 produce
