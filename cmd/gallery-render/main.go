@@ -114,6 +114,19 @@ func entries() []entry {
 			l.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 120})
 			return l
 		}},
+		{"dropdown", 200, 32, func() toolkit.Widget {
+			d := toolkit.NewDropDown([]string{"UTF-8", "Latin-1", "Shift-JIS"}, 0)
+			d.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 32})
+			return d
+		}},
+		{"expander", 240, 60, func() toolkit.Widget {
+			body := toolkit.NewLabel("expanded body")
+			body.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 24})
+			e := toolkit.NewExpander("Details", body)
+			e.Expanded = true
+			e.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 60})
+			return e
+		}},
 		{"treeview", 240, 160, func() toolkit.Widget {
 			root := &toolkit.TreeNode{Label: "/", Expanded: true, Children: []*toolkit.TreeNode{
 				{Label: "src", Expanded: true, Children: []*toolkit.TreeNode{{Label: "main.go"}}},

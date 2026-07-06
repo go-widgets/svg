@@ -124,6 +124,8 @@ func TestRenderPNGShowsTextForTextBearingWidgets(t *testing.T) {
 		"textview":     true, // multi-line prose
 		"notification": true, // "Saved successfully"
 		"tooltip":      true, // "Undo (Ctrl+Z)"
+		"dropdown":     true, // "UTF-8" text + ▼ chevron
+		"expander":     true, // "Details" header + ▼ chevron
 		"badge":        true, // "42"
 		"kbd":          true, // "Ctrl+K"
 		"alert":        true, // "Configuration saved successfully."
