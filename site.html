@@ -76,7 +76,26 @@
     var btn=document.getElementById('theme-toggle');
     if(btn) btn.addEventListener('click',function(){ mode=order[(order.indexOf(mode)+1)%order.length]; apply(mode); });
 
-    var widgets=['button','label','entry','checkbutton','progressbar','listbox','treeview'];
+    // Widget list matches cmd/gallery-render/main.go's entries()
+    // in the same order, so the file names on disk line up. Grouped
+    // by wave for readability: pre-v0.7 core, then the three
+    // additive waves that took the toolkit from 34 -> 62 widgets.
+    var widgets=[
+      // Pre-v0.7 core
+      'button','label','entry','checkbutton','progressbar',
+      'listbox','treeview','radiobutton','togglebutton','spinbutton',
+      'statusbar','textview','notification','tooltip',
+      // v0.7 (Wave 1: GTK alignment)
+      'switch','badge','kbd','alert','card',
+      'breadcrumbs','steps','headerbar','table',
+      // v0.8 (Wave 2: DaisyUI / libadwaita)
+      'avatar','skeleton','rating','toast','banner',
+      'popover','actionrow','viewswitcher','chatbubble','searchentry',
+      'diff','pagination',
+      // v0.9 (Wave 3: finishing pass)
+      'splitbutton','iconbutton','stat','timeline','dropzone',
+      'chip','formfield','progresscircle'
+    ];
     function build(grid, dir){
       var g=document.getElementById(grid);
       widgets.forEach(function(w){
