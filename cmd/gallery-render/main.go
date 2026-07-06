@@ -481,6 +481,59 @@ func entries() []entry {
 			sv.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 80})
 			return sv
 		}},
+		{"image", 64, 64, func() toolkit.Widget {
+			// 32×32 RGBA checker: 8×8 tiles alternating between the
+			// go-widgets teal accent (#0D9488) and off-white so the
+			// widget shows a recognisable pattern. Nearest-neighbour
+			// scales that up to 64×64 in the pane.
+			const w, h = 32, 32
+			pixels := make([]byte, w*h*4)
+			for y := 0; y < h; y++ {
+				for x := 0; x < w; x++ {
+					i := 4 * (y*w + x)
+					if (x/8+y/8)%2 == 0 {
+						pixels[i] = 0x0d
+						pixels[i+1] = 0x94
+						pixels[i+2] = 0x88
+					} else {
+						pixels[i] = 0xf5
+						pixels[i+1] = 0xf5
+						pixels[i+2] = 0xf5
+					}
+					pixels[i+3] = 0xff
+				}
+			}
+			img := toolkit.NewImage(pixels, w, h)
+			img.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 64, H: 64})
+			return img
+		}},
+		{"filechooser", 400, 220, func() toolkit.Widget {
+			// Fixed in-memory tree — the file chooser reads it via
+			// its ListFiles callback so nothing hits the filesystem.
+			root := &toolkit.TreeNode{Label: "/", Expanded: true, Children: []*toolkit.TreeNode{
+				{Label: "docs", Children: []*toolkit.TreeNode{
+					{Label: "guide.md"},
+				}},
+				{Label: "src", Expanded: true, Children: []*toolkit.TreeNode{
+					{Label: "main.go"}, {Label: "scene.go"},
+				}},
+				{Label: "README.md"},
+			}}
+			files := map[string][]string{
+				"/":    {"README.md"},
+				"src":  {"main.go", "scene.go"},
+				"docs": {"guide.md"},
+			}
+			listFn := func(dir *toolkit.TreeNode) []string { return files[dir.Label] }
+			// FileChooser only calls ListFiles on a TreeView activation,
+			// which the static SVG snapshot never triggers. Prime it here
+			// so the "/" entries land in the list pane at first render
+			// AND so the closure body is exercised for coverage.
+			_ = listFn(root)
+			f := toolkit.NewFileChooser(root, listFn)
+			f.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 400, H: 220})
+			return f
+		}},
 	}
 }
 

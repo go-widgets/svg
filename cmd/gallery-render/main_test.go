@@ -161,7 +161,9 @@ func TestRenderPNGShowsTextForTextBearingWidgets(t *testing.T) {
 		"hpaned":        true, // "left pane" + "right pane"
 		"vpaned":        true, // "top pane" + "bottom pane"
 		"scrollview":    true, // "Line one" ... multi-line TextView
-		// scale (no glyph), levelbar (no glyph), spinner (dots only) — skipped
+		"filechooser":   true, // tree labels + list items + "Open" / "Cancel"
+		// scale (no glyph), levelbar (no glyph), spinner (dots only),
+		// image (checker pattern only, no glyph) — skipped
 		// skeleton is intentionally excluded — placeholder bars only, no text.
 		"splitbutton":    true, // "Deploy" + arrow glyph
 		"iconbutton":     true, // "+"
