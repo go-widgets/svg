@@ -534,6 +534,61 @@ func entries() []entry {
 			f.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 400, H: 220})
 			return f
 		}},
+		{"rangeslider", 240, 28, func() toolkit.Widget {
+			r := toolkit.NewRangeSlider(0, 100, 25, 75)
+			r.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 28})
+			return r
+		}},
+		{"datepicker", 180, 176, func() toolkit.Widget {
+			// Rendered open so the snapshot shows the calendar popup. The
+			// field bounds stay a normal row height; the popup draws below it
+			// within the taller canvas.
+			d := toolkit.NewDatePicker(2026, 7, 10)
+			d.Cal.SetToday(2026, 7, 10)
+			d.Open = true
+			d.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 170, H: toolkit.DatePickerFieldH()})
+			return d
+		}},
+		{"linechart", 240, 120, func() toolkit.Widget {
+			c := toolkit.NewLineChart([]float64{3, 7, 2, 8, 5, 9, 4, 6})
+			c.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 120})
+			return c
+		}},
+		{"barchart", 240, 120, func() toolkit.Widget {
+			c := toolkit.NewBarChart([]float64{4, 7, 2, 8, 5, 3})
+			c.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 120})
+			return c
+		}},
+		{"piechart", 120, 120, func() toolkit.Widget {
+			c := toolkit.NewPieChart([]float64{3, 5, 2, 4, 1})
+			c.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 120, H: 120})
+			return c
+		}},
+		{"markdownview", 280, 180, func() toolkit.Widget {
+			m := toolkit.NewMarkdownView("# Heading\n\nA short paragraph of body " +
+				"text that wraps across the view.\n\n- first bullet\n- second bullet\n\n" +
+				"```\ncode block line\n```")
+			m.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 280, H: 180})
+			return m
+		}},
+		{"fontchooser", 160, 120, func() toolkit.Widget {
+			fc := toolkit.NewFontChooser(nil)
+			fc.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 160, H: 120})
+			return fc
+		}},
+		{"contextmenu", 200, 160, func() toolkit.Widget {
+			menu := toolkit.NewMenu([]toolkit.MenuItem{
+				{Label: "Cut", Action: func() {}},
+				{Label: "Copy", Action: func() {}, Shortcut: "Ctrl+C"},
+				{Label: "Paste", Action: func() {}, Shortcut: "Ctrl+V"},
+				{Separator: true},
+				{Label: "Select All", Action: func() {}},
+			})
+			cm := toolkit.NewContextMenu(menu)
+			cm.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 160})
+			cm.Popup(8, 8)
+			return cm
+		}},
 	}
 }
 
