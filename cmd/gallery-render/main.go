@@ -680,6 +680,129 @@ func entries() []entry {
 			cm.Popup(8, 8)
 			return cm
 		}},
+		// v0.42.0 catalogue-completion additions.
+		{"accordion", 240, 160, func() toolkit.Widget {
+			a := toolkit.NewAccordion([]toolkit.AccordionSection{
+				{Title: "General", Body: toolkit.NewLabel("general settings")},
+				{Title: "Advanced", Body: toolkit.NewLabel("advanced settings")},
+				{Title: "About", Body: toolkit.NewLabel("version 0.42.0")},
+			})
+			a.Expanded = 1
+			a.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 160})
+			return a
+		}},
+		{"carousel", 240, 140, func() toolkit.Widget {
+			slide := func(text string) toolkit.Widget {
+				l := toolkit.NewLabel(text)
+				return l
+			}
+			c := toolkit.NewCarousel([]toolkit.Widget{
+				slide("Slide one"),
+				slide("Slide two"),
+				slide("Slide three"),
+			})
+			c.Current = 1
+			c.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 140})
+			return c
+		}},
+		{"command-palette", 320, 180, func() toolkit.Widget {
+			cp := toolkit.NewCommandPalette([]toolkit.PaletteCommand{
+				{Label: "Open File", Action: func() {}},
+				{Label: "Open Folder", Action: func() {}},
+				{Label: "Close Window", Action: func() {}},
+				{Label: "Toggle Sidebar", Action: func() {}},
+			})
+			cp.Open()
+			cp.Query = "open"
+			cp.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 180})
+			return cp
+		}},
+		{"wizard", 320, 200, func() toolkit.Widget {
+			w := toolkit.NewWizard([]toolkit.WizardStep{
+				{Title: "Account", Body: toolkit.NewLabel("account details")},
+				{Title: "Profile", Body: toolkit.NewLabel("profile details")},
+				{Title: "Review", Body: toolkit.NewLabel("review + submit")},
+			})
+			w.Current = 1
+			w.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 200})
+			return w
+		}},
+		{"date-range-picker", 190, 190, func() toolkit.Widget {
+			d := toolkit.NewDateRangePicker(2026, 7)
+			d.Cal.SetToday(2026, 7, 6)
+			d.Start = toolkit.Date{Y: 2026, M: 7, D: 10}
+			d.End = toolkit.Date{Y: 2026, M: 7, D: 18}
+			d.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 190, H: 190})
+			return d
+		}},
+		{"color-picker", toolkit.ColorPickerWidth, toolkit.ColorPickerHeight, func() toolkit.Widget {
+			c := toolkit.NewColorPicker(toolkit.RGB(0x0d, 0x94, 0x88))
+			c.SetBounds(toolkit.Rect{X: 0, Y: 0, W: toolkit.ColorPickerWidth, H: toolkit.ColorPickerHeight})
+			return c
+		}},
+		{"segmented-bar", 240, 20, func() toolkit.Widget {
+			s := toolkit.NewSegmentedBar([]toolkit.BarSegment{
+				{Value: 40, Fill: toolkit.RGB(0x0d, 0x94, 0x88)},
+				{Value: 25, Fill: toolkit.RGB(0xf5, 0xa6, 0x23)},
+				{Value: 15, Fill: toolkit.RGB(0xc0, 0x39, 0x2b)},
+			})
+			s.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 20})
+			return s
+		}},
+		{"markdown-editor", 360, 180, func() toolkit.Widget {
+			m := toolkit.NewMarkdownEditor("# Title\n\nSome **bold** sample text.\n\n- one\n- two")
+			m.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 360, H: 180})
+			return m
+		}},
+		{"treetable", 320, 160, func() toolkit.Widget {
+			root := []*toolkit.TreeTableNode{
+				{
+					Cells:    []string{"src", "", "dir"},
+					Expanded: true,
+					Children: []*toolkit.TreeTableNode{
+						{Cells: []string{"main.go", "4.8 KB", "source"}},
+						{Cells: []string{"scene.go", "2.1 KB", "source"}},
+					},
+				},
+				{Cells: []string{"README.md", "1.2 KB", "text"}},
+			}
+			cols := []toolkit.TreeTableColumn{
+				{Title: "Name", Width: 160},
+				{Title: "Size", Width: 80},
+				{Title: "Kind"},
+			}
+			t := toolkit.NewTreeTable(cols, root)
+			t.Selected = root[0].Children[0]
+			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 160})
+			return t
+		}},
+		{"table-multiselect", 320, 100, func() toolkit.Widget {
+			cols := []toolkit.TableColumn{
+				{Title: "Name", Width: 120},
+				{Title: "Size", Width: 60},
+				{Title: "Kind"},
+			}
+			rows := [][]string{
+				{"README.md", "1.2 KB", "text"},
+				{"main.go", "4.8 KB", "source"},
+				{"assets", "-", "dir"},
+			}
+			t := toolkit.NewTable(cols, rows)
+			t.MultiSelect = true
+			t.SetRowSelection(0, 2)
+			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 100})
+			return t
+		}},
+		{"menu-checkable", 180, 110, func() toolkit.Widget {
+			m := toolkit.NewMenu([]toolkit.MenuItem{
+				{Label: "Word Wrap", Checkable: true, Checked: true},
+				{Separator: true},
+				{Label: "Light Theme", RadioGroup: 1, Checked: true},
+				{Label: "Dark Theme", RadioGroup: 1},
+			})
+			m.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 180, H: 110})
+			return m
+		}},
 	}
 }
 
