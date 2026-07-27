@@ -182,6 +182,18 @@ func TestRenderPNGShowsTextForTextBearingWidgets(t *testing.T) {
 		"chip":                true, // "frontend" + close glyph
 		"formfield":           true, // "Username" + help caption
 		"progresscircle":      true, // "66%" centered text
+		// v0.42.0 catalogue-completion additions
+		"accordion":         true, // "General" / "Advanced" / "About" section titles + expanded body
+		"carousel":          true, // "Slide two" current-slide label
+		"command-palette":   true, // query row + filtered command labels
+		"wizard":            true, // "Account"/"Profile"/"Review" steps strip + body + Back/Next buttons
+		"date-range-picker": true, // month/year header + weekday row + day numbers
+		"markdown-editor":   true, // rendered Markdown source + preview panes
+		"treetable":         true, // column headers + cell text
+		"table-multiselect": true, // headers + cell text, two selected rows
+		"menu-checkable":    true, // "Word Wrap" / "Light Theme" / "Dark Theme" + check/radio glyphs
+		// color-picker (SV square/hue strip/swatch, no glyph) + segmented-bar
+		// (color bands only, no glyph) are intentionally excluded — no text.
 	}
 	// A single-row underline (the v0.6.0 label bug) produces exactly
 	// one drawn row. Text glyphs at painter.GlyphHeight = 7 produce
