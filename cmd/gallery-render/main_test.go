@@ -115,29 +115,35 @@ func TestRenderPNGShowsTextForTextBearingWidgets(t *testing.T) {
 	// these entries the same way v0.6.0's Label bug trips the label
 	// case.
 	textBearing := map[string]bool{
-		"button":       true,
-		"label":        true,
-		"radiobutton":  true, // "Enable option"
-		"togglebutton": true, // "Muted"
-		"spinbutton":   true, // "42" (numeric value)
-		"statusbar":    true, // "Ready" / "Line 42" / "UTF-8"
-		"textview":     true, // multi-line prose
-		"notification": true, // "Saved successfully"
-		"tooltip":      true, // "Undo (Ctrl+Z)"
-		"dropdown":     true, // "UTF-8" text + ▼ chevron
-		"expander":     true, // "Details" header + ▼ chevron
-		"badge":        true, // "42"
-		"kbd":          true, // "Ctrl+K"
-		"alert":        true, // "Configuration saved successfully."
-		"card":         true, // title + body + footer
-		"breadcrumbs":  true, // "home > projects > widgets > toolkit"
-		"steps":        true, // "Plan", "Build", "Test", "Ship" captions
-		"headerbar":    true, // "Files" + "~/Documents"
-		"table":        true, // headers + cell text
+		"button":              true,
+		"label":               true,
+		"radiobutton":         true, // "Enable option"
+		"togglebutton":        true, // "Muted"
+		"spinbutton":          true, // "42" (numeric value)
+		"statusbar":           true, // "Ready" / "Line 42" / "UTF-8"
+		"textview":            true, // multi-line prose
+		"notification":        true, // "Saved successfully"
+		"notification-corner": true, // "Reconnected", corner-anchored
+		"tooltip":             true, // "Undo (Ctrl+Z)"
+		"dropdown":            true, // "UTF-8" text + ▼ chevron
+		"dropdown-openup":     true, // "UTF-8" control text + popover ListBox items
+		"expander":            true, // "Details" header + ▼ chevron
+		"badge":               true, // "42"
+		"kbd":                 true, // "Ctrl+K"
+		"alert":               true, // "Configuration saved successfully."
+		"card":                true, // title + body + footer
+		"breadcrumbs":         true, // "home > projects > widgets > toolkit"
+		"steps":               true, // "Plan", "Build", "Test", "Ship" captions
+		"steps-vertical":      true, // same captions, vertical strip
+		"toolbar-vertical":    true, // single-letter item glyphs ("N", "O", "S", "C")
+		"headerbar":           true, // "Files" + "~/Documents"
+		"table":               true, // headers + cell text
+		"table-aligned":       true, // headers + right/center-aligned cell text
 		// switch is intentionally excluded — knob/track only, no text.
 		"avatar":       true, // "DL"
 		"rating":       true, // "*" glyphs
 		"toast":        true, // "Copied to clipboard"
+		"toast-corner": true, // "Copied to clipboard", corner-anchored
 		"banner":       true, // "Software update available." + "Install"
 		"popover":      true, // "Menu" header + "Popover content" child
 		"actionrow":    true, // "Language" + "English (US)"
@@ -147,32 +153,35 @@ func TestRenderPNGShowsTextForTextBearingWidgets(t *testing.T) {
 		"diff":         true, // 4 diff lines
 		"pagination":   true, // "<", "1", "2", "3", "4", "5", ">"
 		// v0.9.1 catalogue-completion additions
-		"calendar":      true, // day-of-week headers + numeric day cells
-		"colorchooser":  true, // "R", "G", "B" + "#0D9488"
-		"notebook":      true, // tab titles + body labels
-		"menubar":       true, // "File", "Edit", "View", "Help"
-		"menu":          true, // "New", "Open", "Save As...", "Quit"
-		"dialog":        true, // "Confirm action" title + body + "OK"
-		"messagedialog": true, // "Notice" title + message body
-		"frame":         true, // "framed content" child label
-		"hbox":          true, // "left" + "middle" + "right"
-		"vbox":          true, // "top" + "middle" + "bottom"
-		"grid":          true, // "a1" + "b1" + "a2" + "b2"
-		"hpaned":        true, // "left pane" + "right pane"
-		"vpaned":        true, // "top pane" + "bottom pane"
-		"scrollview":    true, // "Line one" ... multi-line TextView
-		"filechooser":   true, // tree labels + list items + "Open" / "Cancel"
+		"calendar":             true, // day-of-week headers + numeric day cells
+		"colorchooser":         true, // "R", "G", "B" + "#0D9488"
+		"notebook":             true, // tab titles + body labels
+		"notebook-tabs-left":   true, // tab titles + body labels, left tab strip
+		"notebook-tabs-bottom": true, // tab titles + body labels, bottom tab strip
+		"menubar":              true, // "File", "Edit", "View", "Help"
+		"menu":                 true, // "New", "Open", "Save As...", "Quit"
+		"dialog":               true, // "Confirm action" title + body + "OK"
+		"messagedialog":        true, // "Notice" title + message body
+		"frame":                true, // "framed content" child label
+		"hbox":                 true, // "left" + "middle" + "right"
+		"vbox":                 true, // "top" + "middle" + "bottom"
+		"grid":                 true, // "a1" + "b1" + "a2" + "b2"
+		"hpaned":               true, // "left pane" + "right pane"
+		"vpaned":               true, // "top pane" + "bottom pane"
+		"scrollview":           true, // "Line one" ... multi-line TextView
+		"filechooser":          true, // tree labels + list items + "Open" / "Cancel"
 		// scale (no glyph), levelbar (no glyph), spinner (dots only),
 		// image (checker pattern only, no glyph) — skipped
 		// skeleton is intentionally excluded — placeholder bars only, no text.
-		"splitbutton":    true, // "Deploy" + arrow glyph
-		"iconbutton":     true, // "+"
-		"stat":           true, // "Requests / min" + "12,845" + "+8.3%"
-		"timeline":       true, // event titles + details
-		"dropzone":       true, // "Drop files to upload"
-		"chip":           true, // "frontend" + close glyph
-		"formfield":      true, // "Username" + help caption
-		"progresscircle": true, // "66%" centered text
+		"splitbutton":         true, // "Deploy" + arrow glyph
+		"iconbutton":          true, // "+"
+		"stat":                true, // "Requests / min" + "12,845" + "+8.3%"
+		"timeline":            true, // event titles + details
+		"timeline-horizontal": true, // event titles + details, horizontal ribbon
+		"dropzone":            true, // "Drop files to upload"
+		"chip":                true, // "frontend" + close glyph
+		"formfield":           true, // "Username" + help caption
+		"progresscircle":      true, // "66%" centered text
 	}
 	// A single-row underline (the v0.6.0 label bug) produces exactly
 	// one drawn row. Text glyphs at painter.GlyphHeight = 7 produce

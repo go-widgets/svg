@@ -119,6 +119,22 @@ func entries() []entry {
 			d.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 32})
 			return d
 		}},
+		{"dropdown-openup", 200, 90, func() toolkit.Widget {
+			// The control sits at the BOTTOM of the pane with OpenUp + Open
+			// set, so the host-drawn popover (an Overlay layer built from
+			// DropDown.PopoverBounds()) renders ABOVE it instead of below —
+			// the layout PopoverBounds computes when OpenUp is set.
+			d := toolkit.NewDropDown([]string{"UTF-8", "Latin-1", "Shift-JIS"}, 0)
+			d.OpenUp = true
+			d.Open = true
+			ov := toolkit.NewOverlay(d)
+			ov.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 90})
+			d.SetBounds(toolkit.Rect{X: 0, Y: 60, W: 200, H: 30})
+			list := toolkit.NewListBox(d.Options)
+			list.SetBounds(d.PopoverBounds())
+			ov.Push(list)
+			return ov
+		}},
 		{"expander", 240, 60, func() toolkit.Widget {
 			body := toolkit.NewLabel("expanded body")
 			body.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 24})
@@ -168,6 +184,13 @@ func entries() []entry {
 			n.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 32})
 			return n
 		}},
+		{"notification-corner", 260, 120, func() toolkit.Widget {
+			host := toolkit.Rect{X: 0, Y: 0, W: 260, H: 120}
+			n := toolkit.NewNotification("Reconnected")
+			n.Visible = true
+			n.AnchorIn(host, toolkit.TopLeft)
+			return n
+		}},
 		{"tooltip", 160, 20, func() toolkit.Widget {
 			t := toolkit.NewTooltip("Undo (Ctrl+Z)")
 			t.Visible = true
@@ -209,6 +232,24 @@ func entries() []entry {
 			s.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 48})
 			return s
 		}},
+		{"steps-vertical", 140, 200, func() toolkit.Widget {
+			s := toolkit.NewSteps([]string{"Plan", "Build", "Test", "Ship"}, 2)
+			s.Orientation = toolkit.Vertical
+			s.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 140, H: 200})
+			return s
+		}},
+		{"toolbar-vertical", 32, 200, func() toolkit.Widget {
+			tb := toolkit.NewToolbar([]toolkit.ToolbarItem{
+				{Label: "New"},
+				{Label: "Open"},
+				{Separator: true},
+				{Label: "Save"},
+				{Label: "Cut"},
+			})
+			tb.Orientation = toolkit.Vertical
+			tb.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 32, H: 200})
+			return tb
+		}},
 		{"headerbar", 360, 40, func() toolkit.Widget {
 			h := toolkit.NewHeaderBar("Files")
 			h.Subtitle = "~/Documents"
@@ -231,6 +272,22 @@ func entries() []entry {
 			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 100})
 			return t
 		}},
+		{"table-aligned", 320, 100, func() toolkit.Widget {
+			cols := []toolkit.TableColumn{
+				{Title: "Name", Width: 140},
+				{Title: "Count", Width: 80, Align: toolkit.AlignRight},
+				{Title: "Status", Align: toolkit.AlignCenter},
+			}
+			rows := [][]string{
+				{"apples", "128", "OK"},
+				{"oranges", "4,096", "WARN"},
+				{"pears", "12", "OK"},
+			}
+			t := toolkit.NewTable(cols, rows)
+			t.Selected = 0
+			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 100})
+			return t
+		}},
 		{"avatar", 40, 40, func() toolkit.Widget {
 			a := toolkit.NewAvatar("DL")
 			a.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 40, H: 40})
@@ -250,6 +307,13 @@ func entries() []entry {
 			t := toolkit.NewToast("Copied to clipboard", toolkit.ToastSuccess)
 			t.Visible = true
 			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 32})
+			return t
+		}},
+		{"toast-corner", 260, 120, func() toolkit.Widget {
+			host := toolkit.Rect{X: 0, Y: 0, W: 260, H: 120}
+			t := toolkit.NewToast("Copied to clipboard", toolkit.ToastSuccess)
+			t.Visible = true
+			t.AnchorIn(host, toolkit.BottomRight, 0)
 			return t
 		}},
 		{"banner", 360, 32, func() toolkit.Widget {
@@ -330,6 +394,17 @@ func entries() []entry {
 			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 120})
 			return t
 		}},
+		{"timeline-horizontal", 480, 80, func() toolkit.Widget {
+			t := toolkit.NewTimeline([]toolkit.TimelineEvent{
+				{Title: "PR opened", Kind: toolkit.TimelineDefault},
+				{Title: "Reviewed", Detail: "LGTM", Kind: toolkit.TimelineSuccess},
+				{Title: "Build failed", Kind: toolkit.TimelineError},
+				{Title: "Force-pushed", Kind: toolkit.TimelineWarning},
+			})
+			t.Horizontal = true
+			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 480, H: 80})
+			return t
+		}},
 		{"dropzone", 260, 100, func() toolkit.Widget {
 			d := toolkit.NewDropZone("Drop files to upload")
 			d.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 100})
@@ -388,6 +463,22 @@ func entries() []entry {
 			n.AddTab("One", toolkit.NewLabel("first tab body"))
 			n.AddTab("Two", toolkit.NewLabel("second tab body"))
 			n.AddTab("Three", toolkit.NewLabel("third tab body"))
+			n.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 140})
+			return n
+		}},
+		{"notebook-tabs-left", 320, 140, func() toolkit.Widget {
+			n := toolkit.NewNotebook()
+			n.AddTab("One", toolkit.NewLabel("first tab body"))
+			n.AddTab("Two", toolkit.NewLabel("second tab body"))
+			n.TabSide = toolkit.TabLeft
+			n.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 140})
+			return n
+		}},
+		{"notebook-tabs-bottom", 320, 140, func() toolkit.Widget {
+			n := toolkit.NewNotebook()
+			n.AddTab("One", toolkit.NewLabel("first tab body"))
+			n.AddTab("Two", toolkit.NewLabel("second tab body"))
+			n.TabSide = toolkit.TabBottom
 			n.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 140})
 			return n
 		}},
