@@ -25,6 +25,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/go-widgets/painter"
 	svgwidget "github.com/go-widgets/svg/widget"
 	"github.com/go-widgets/toolkit"
 )
@@ -802,6 +803,117 @@ func entries() []entry {
 			})
 			m.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 180, H: 110})
 			return m
+		}},
+		{"table-editing", 320, 100, func() toolkit.Widget {
+			cols := []toolkit.TableColumn{
+				{Title: "Task", Width: 150},
+				{Title: "Owner", Width: 100, Editable: true},
+				{Title: "Status"},
+			}
+			rows := [][]string{
+				{"Ship cell editing", "alice", "done"},
+				{"Frozen columns", "bob", "wip"},
+				{"Group rows", "carol", "todo"},
+			}
+			t := toolkit.NewTable(cols, rows)
+			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 100})
+			// Open the inline editor on row 1's Owner cell.
+			t.OnEvent(toolkit.Event{Kind: toolkit.EventClick, X: 200, Y: toolkit.TableHeaderHeight + toolkit.TableRowHeight + 2})
+			t.OnEvent(toolkit.Event{Kind: toolkit.EventChar, Code: "y"})
+			return t
+		}},
+		{"table-groups", 300, 140, func() toolkit.Widget {
+			cols := []toolkit.TableColumn{{Title: "Status", Width: 90}, {Title: "Task", Width: 200}}
+			rows := [][]string{
+				{"in-progress", "Ship cell editing"},
+				{"in-progress", "Frozen columns"},
+				{"todo", "Group rows"},
+				{"done", "Sencha layouts"},
+			}
+			t := toolkit.NewTable(cols, rows)
+			t.GroupBy = 0
+			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 300, H: 140})
+			// Collapse the "done" group (visual line 5).
+			t.OnEvent(toolkit.Event{Kind: toolkit.EventClick, X: 20, Y: toolkit.TableHeaderHeight + 5*toolkit.TableRowHeight + 2})
+			return t
+		}},
+		{"table-frozen", 300, 110, func() toolkit.Widget {
+			cols := []toolkit.TableColumn{
+				{Title: "Name", Width: 110},
+				{Title: "Q1", Width: 60, Align: toolkit.AlignRight},
+				{Title: "Q2", Width: 60, Align: toolkit.AlignRight},
+				{Title: "Q3", Width: 60, Align: toolkit.AlignRight},
+				{Title: "Total", Width: 70, Align: toolkit.AlignRight},
+			}
+			rows := [][]string{
+				{"Alice", "12", "18", "24", "84"},
+				{"Bob", "9", "15", "21", "72"},
+				{"Carol", "20", "22", "19", "86"},
+			}
+			t := toolkit.NewTable(cols, rows)
+			t.FrozenColumns = 1
+			t.Selected = 2
+			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 300, H: 110})
+			t.ScrollXTo(120) // scroll Q1/Q2 under the frozen Name column
+			return t
+		}},
+		{"frame-panel", 220, 90, func() toolkit.Widget {
+			f := toolkit.NewFrame(toolkit.NewLabel("  Body content lives here"))
+			f.Title = "Display options"
+			f.Collapsible = true
+			f.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 220, H: 90})
+			return f
+		}},
+		{"propertygrid", 260, 110, func() toolkit.Widget {
+			pg := toolkit.NewPropertyGrid()
+			pg.Add("Width", "1024")
+			pg.Add("Height", "768")
+			pg.Add("Title", "Untitled")
+			pg.Add("Visible", "true")
+			pg.Table().Selected = 2
+			pg.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 110})
+			// Open the editor on the "Title" value cell.
+			pg.OnEvent(toolkit.Event{Kind: toolkit.EventClick, X: 190, Y: toolkit.TableHeaderHeight + 2*toolkit.TableRowHeight + 2})
+			return pg
+		}},
+		{"loadmask", 200, 120, func() toolkit.Widget {
+			m := toolkit.NewLoadMask("Loading…")
+			m.Active = true
+			m.Tick(0.12)
+			m.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 120})
+			return m
+		}},
+		{"pagingtoolbar", 250, toolkit.PagingBtnH, func() toolkit.Widget {
+			pt := toolkit.NewPagingToolbar(6, 12)
+			pt.ShowRefresh = true
+			pt.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 250, H: toolkit.PagingBtnH})
+			return pt
+		}},
+		{"listbox-dataview", 220, 128, func() toolkit.Widget {
+			subs := []string{"12 unread · updated 2m ago", "3 unread · updated 1h ago",
+				"all read · updated yesterday", "8 unread · updated 5m ago"}
+			swatch := []toolkit.RGBA{{R: 0xE0, G: 0x50, B: 0x50, A: 255}, {R: 0x50, G: 0xA0, B: 0xE0, A: 255},
+				{R: 0x50, G: 0xB0, B: 0x70, A: 255}, {R: 0xC0, G: 0x80, B: 0xE0, A: 255}}
+			lb := toolkit.NewListBox([]string{"Reddit", "Hacker News", "Lobsters", "GitHub"})
+			lb.RowHeight = 32
+			lb.Selected = 1
+			lb.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 220, H: 128})
+			lb.ItemRenderer = func(p painter.Painter, theme *toolkit.Theme, rc toolkit.Rect, i int, item string, sel bool, ink toolkit.RGBA) {
+				p.FillRect(painter.Rect{X: rc.X + 8, Y: rc.Y + rc.H/2 - 6, W: 12, H: 12}, swatch[i])
+				title := toolkit.NewLabel(item)
+				title.Ink = ink
+				title.SetBounds(toolkit.Rect{X: rc.X + 28, Y: rc.Y + 4, W: rc.W - 32, H: 14})
+				title.Draw(p, theme)
+				sub := toolkit.NewLabel(subs[i])
+				subInk := ink
+				if !sel {
+					subInk = toolkit.RGBA{R: 0x90, G: 0x90, B: 0x90, A: 255}
+				}
+				sub.Ink = subInk
+				sub.SetBounds(toolkit.Rect{X: rc.X + 28, Y: rc.Y + 18, W: rc.W - 32, H: 12})
+				sub.Draw(p, theme)
+			}
+			return lb
 		}},
 	}
 }
