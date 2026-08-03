@@ -915,6 +915,141 @@ func entries() []entry {
 			}
 			return lb
 		}},
+		// v0.82.0 dashboard-widget additions.
+		{"gantt", 520, 140, func() toolkit.Widget {
+			g := toolkit.NewGantt([]toolkit.GanttTask{
+				{Label: "Design", Start: 0, End: 3, Progress: 1.0},
+				{Label: "Build", Start: 2, End: 7, Progress: 0.6},
+				{Label: "Test", Start: 6, End: 9, Progress: 0.25},
+				{Label: "Docs", Start: 7, End: 10, Fill: toolkit.RGB(0xf5, 0xa6, 0x23)},
+				{Label: "Ship", Start: 9, End: 11, Fill: toolkit.RGB(0xc0, 0x39, 0x2b)},
+			})
+			g.Selected = 1
+			g.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 520, H: 140})
+			return g
+		}},
+		{"kanban", 600, 220, func() toolkit.Widget {
+			k := toolkit.NewKanban([]toolkit.KanbanColumn{
+				{Title: "To Do", Cards: []toolkit.KanbanCard{
+					{Title: "Group rows", Subtitle: "table feature"},
+					{Title: "Dark theme", Subtitle: "polish", Accent: toolkit.RGB(0xf5, 0xa6, 0x23)},
+				}},
+				{Title: "In Progress", Cards: []toolkit.KanbanCard{
+					{Title: "Cell editing", Subtitle: "alice"},
+					{Title: "Frozen columns", Subtitle: "bob"},
+				}},
+				{Title: "Done", Cards: []toolkit.KanbanCard{
+					{Title: "Sencha layouts", Subtitle: "shipped", Accent: toolkit.RGB(0x50, 0xb0, 0x70)},
+				}},
+			})
+			k.SelectedCol = 1
+			k.SelectedCard = 0
+			k.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 600, H: 220})
+			return k
+		}},
+		{"sparkline-line", 120, 32, func() toolkit.Widget {
+			s := toolkit.NewSparkline([]float64{3, 7, 4, 8, 6, 9, 5, 8, 11, 9})
+			s.Kind = toolkit.SparkLine
+			s.ShowLast = true
+			s.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 120, H: 32})
+			return s
+		}},
+		{"sparkline-bar", 120, 32, func() toolkit.Widget {
+			s := toolkit.NewSparkline([]float64{3, 7, 4, 8, 6, 9, 5, 8, 11, 9})
+			s.Kind = toolkit.SparkBar
+			s.ShowLast = true
+			s.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 120, H: 32})
+			return s
+		}},
+		{"agenda-week", 720, 340, func() toolkit.Widget {
+			a := toolkit.NewAgenda([]toolkit.AgendaEvent{
+				{Title: "Standup", Day: 0, StartMin: 9 * 60, EndMin: 9*60 + 30},
+				{Title: "Design review", Day: 1, StartMin: 11 * 60, EndMin: 12 * 60,
+					Fill: toolkit.RGB(0xf5, 0xa6, 0x23)},
+				{Title: "1:1", Day: 2, StartMin: 14 * 60, EndMin: 15 * 60},
+				{Title: "Release", Day: 4, StartMin: 16 * 60, EndMin: 17*60 + 30,
+					Fill: toolkit.RGB(0xc0, 0x39, 0x2b)},
+			})
+			a.Selected = 1
+			a.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 720, H: 340})
+			return a
+		}},
+		{"agenda-month", 640, 360, func() toolkit.Widget {
+			a := toolkit.NewAgenda([]toolkit.AgendaEvent{
+				{Title: "Kickoff", Y: 2026, M: 8, D: 3},
+				{Title: "Review", Y: 2026, M: 8, D: 12, Fill: toolkit.RGB(0xf5, 0xa6, 0x23)},
+				{Title: "Demo", Y: 2026, M: 8, D: 12},
+				{Title: "Retro", Y: 2026, M: 8, D: 20},
+				{Title: "Release", Y: 2026, M: 8, D: 28, Fill: toolkit.RGB(0xc0, 0x39, 0x2b)},
+			})
+			a.View = toolkit.AgendaMonth
+			a.Year = 2026
+			a.Month = 8
+			a.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 640, H: 360})
+			return a
+		}},
+		{"areachart", 260, 180, func() toolkit.Widget {
+			c := toolkit.NewAreaChart([][]float64{
+				{2, 5, 3, 7, 6, 9, 8},
+				{1, 2, 2, 4, 3, 5, 4},
+			})
+			c.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 180})
+			return c
+		}},
+		{"scatterchart", 260, 180, func() toolkit.Widget {
+			c := toolkit.NewScatterChart([][]toolkit.ScatterPoint{
+				{{X: 1, Y: 2}, {X: 3, Y: 5}, {X: 4, Y: 3}, {X: 6, Y: 7}, {X: 8, Y: 6}},
+				{{X: 2, Y: 8}, {X: 5, Y: 4}, {X: 7, Y: 9}, {X: 9, Y: 5}},
+			})
+			c.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 180})
+			return c
+		}},
+		{"radarchart", 240, 220, func() toolkit.Widget {
+			c := toolkit.NewRadarChart(
+				[]string{"Speed", "Power", "Range", "Cost", "Weight"},
+				[][]float64{
+					{8, 6, 7, 4, 5},
+					{5, 8, 4, 7, 6},
+				})
+			c.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 220})
+			return c
+		}},
+		{"table-summary", 320, 140, func() toolkit.Widget {
+			cols := []toolkit.TableColumn{
+				{Title: "Task", Width: 150},
+				{Title: "Hours", Width: 80, Align: toolkit.AlignRight, Aggregate: toolkit.AggregateSum},
+				{Title: "Done %", Align: toolkit.AlignRight, Aggregate: toolkit.AggregateAvg},
+			}
+			rows := [][]string{
+				{"Design", "12", "100"},
+				{"Build", "28", "60"},
+				{"Test", "16", "25"},
+			}
+			t := toolkit.NewTable(cols, rows)
+			t.ShowSummary = true
+			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 140})
+			return t
+		}},
+		{"table-expander", 320, 140, func() toolkit.Widget {
+			cols := []toolkit.TableColumn{
+				{Title: "Name", Width: 150},
+				{Title: "Size", Width: 70},
+				{Title: "Kind"},
+			}
+			rows := [][]string{
+				{"main.go", "4.8 KB", "source"},
+				{"scene.go", "2.1 KB", "source"},
+				{"README.md", "1.2 KB", "text"},
+			}
+			t := toolkit.NewTable(cols, rows)
+			t.RowDetail = func(r int) string {
+				return "Detail for " + rows[r][0] + " — last modified today"
+			}
+			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 140})
+			// Expand row 0 by clicking its column-0 disclosure chevron.
+			t.OnEvent(toolkit.Event{Kind: toolkit.EventClick, X: 6, Y: toolkit.TableHeaderHeight + 2})
+			return t
+		}},
 	}
 }
 
