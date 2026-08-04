@@ -192,6 +192,10 @@ func TestRenderPNGShowsTextForTextBearingWidgets(t *testing.T) {
 		"treetable":         true, // column headers + cell text
 		"table-multiselect": true, // headers + cell text, two selected rows
 		"menu-checkable":    true, // "Word Wrap" / "Light Theme" / "Dark Theme" + check/radio glyphs
+		// v0.96/v0.97 Agenda multi-calendar + sidebar + inline editor
+		"agenda-calendars": true, // month grid: day numbers + colour-coded event titles
+		"agenda-sidebar":   true, // "Team"/"Eng"/"Ops"/"Personal" calendar rows
+		"agenda-editor":    true, // "Edit event" panel + "Kickoff" title + day numbers
 		// color-picker (SV square/hue strip/swatch, no glyph) + segmented-bar
 		// (color bands only, no glyph) are intentionally excluded — no text.
 	}

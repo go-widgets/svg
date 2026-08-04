@@ -76,33 +76,29 @@
     var btn=document.getElementById('theme-toggle');
     if(btn) btn.addEventListener('click',function(){ mode=order[(order.indexOf(mode)+1)%order.length]; apply(mode); });
 
-    // Widget list matches cmd/gallery-render/main.go's entries()
-    // in the same order, so the file names on disk line up. Grouped
-    // by wave for readability: pre-v0.7 core, then the three
-    // additive waves that took the toolkit from 34 -> 62 widgets.
+    // Widget list — generated to match cmd/gallery-render/main.go's
+    // entries() exactly (same order → the file names on disk line up).
+    // Regenerate on any entries() change.
     var widgets=[
-      // Pre-v0.7 core
-      'button','label','entry','checkbutton','progressbar',
-      'listbox','dropdown','expander','treeview','radiobutton',
-      'togglebutton','spinbutton','statusbar','textview',
-      'notification','tooltip',
-      // v0.7 (Wave 1: GTK alignment)
-      'switch','badge','kbd','alert','card',
-      'breadcrumbs','steps','headerbar','table',
-      // v0.8 (Wave 2: DaisyUI / libadwaita)
-      'avatar','skeleton','rating','toast','banner',
-      'popover','actionrow','viewswitcher','chatbubble','searchentry',
-      'diff','pagination',
-      // v0.9 (Wave 3: finishing pass)
-      'splitbutton','iconbutton','stat','timeline','dropzone',
-      'chip','formfield','progresscircle',
-      // v0.9.1 catalogue-completion (pre-v0.7 widgets that were
-      // missing from the SVG snapshot page; all shipped in the
-      // toolkit but never rendered here)
-      'calendar','colorchooser','scale','levelbar','spinner',
-      'notebook','menubar','menu','dialog','messagedialog',
-      'frame','hbox','vbox','grid','hpaned','vpaned','scrollview',
-      'image','filechooser'
+      'button','label','entry','checkbutton','progressbar','listbox',
+      'dropdown','dropdown-openup','expander','treeview','radiobutton','togglebutton',
+      'spinbutton','statusbar','textview','notification','notification-corner','tooltip',
+      'switch','badge','kbd','alert','card','breadcrumbs',
+      'steps','steps-vertical','toolbar-vertical','headerbar','table','table-aligned',
+      'avatar','skeleton','rating','toast','toast-corner','banner',
+      'popover','actionrow','viewswitcher','chatbubble','searchentry','diff',
+      'pagination','splitbutton','iconbutton','stat','timeline','timeline-horizontal',
+      'dropzone','chip','formfield','progresscircle','calendar','colorchooser',
+      'scale','levelbar','spinner','notebook','notebook-tabs-left','notebook-tabs-bottom',
+      'menubar','menu','dialog','messagedialog','frame','hbox',
+      'vbox','grid','hpaned','vpaned','scrollview','image',
+      'filechooser','rangeslider','datepicker','linechart','barchart','piechart',
+      'markdownview','fontchooser','contextmenu','accordion','carousel','command-palette',
+      'wizard','date-range-picker','color-picker','segmented-bar','markdown-editor','treetable',
+      'table-multiselect','menu-checkable','table-editing','table-groups','table-frozen','frame-panel',
+      'propertygrid','loadmask','pagingtoolbar','listbox-dataview','gantt','kanban',
+      'sparkline-line','sparkline-bar','agenda-week','agenda-month','agenda-calendars','agenda-sidebar',
+      'agenda-editor','areachart','scatterchart','radarchart','table-summary','table-expander'
     ];
     function build(grid, dir){
       var g=document.getElementById(grid);

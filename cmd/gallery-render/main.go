@@ -79,6 +79,17 @@ type entry struct {
 	Make func() toolkit.Widget
 }
 
+// agendaWithEditor renders an Agenda together with its open inline event
+// editor overlay. The editor is a host-owned overlay painted by DrawEditor
+// (which Draw alone does not call), so the snapshot embeds the Agenda and
+// composes the two draws — everything else (bounds/hit/events) is promoted.
+type agendaWithEditor struct{ *toolkit.Agenda }
+
+func (w agendaWithEditor) Draw(p painter.Painter, theme *toolkit.Theme) {
+	w.Agenda.Draw(p, theme)
+	w.Agenda.DrawEditor(p, theme)
+}
+
 // entries lists the widgets to render + their canonical pane sizes.
 // Kept in a separate function so tests can drive the whole render
 // loop through a temp directory.
@@ -714,7 +725,7 @@ func entries() []entry {
 				{Label: "Toggle Sidebar", Action: func() {}},
 			})
 			cp.Open()
-			cp.Query = "open"
+			cp.SetQuery("open")
 			cp.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 180})
 			return cp
 		}},
@@ -987,6 +998,56 @@ func entries() []entry {
 			a.Month = 8
 			a.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 640, H: 360})
 			return a
+		}},
+		{"agenda-calendars", 640, 360, func() toolkit.Widget {
+			// Multi-calendar month: each event's colour comes from its calendar,
+			// and the hidden "Personal" calendar's event (PTO) is not drawn.
+			cals := []toolkit.AgendaCalendar{
+				{Name: "Team", Color: toolkit.RGB(0x35, 0x84, 0xe4)},
+				{Name: "Eng", Color: toolkit.RGB(0x1e, 0x9e, 0x52)},
+				{Name: "Ops", Color: toolkit.RGB(0xe0, 0x50, 0x50)},
+				{Name: "Personal", Color: toolkit.RGB(0xc0, 0x80, 0xe0), Hidden: true},
+			}
+			a := toolkit.NewAgenda([]toolkit.AgendaEvent{
+				{Title: "Kickoff", Y: 2026, M: 8, D: 3, Calendar: 0},
+				{Title: "Review", Y: 2026, M: 8, D: 12, Calendar: 1},
+				{Title: "Ship", Y: 2026, M: 8, D: 20, Calendar: 2},
+				{Title: "PTO", Y: 2026, M: 8, D: 24, Calendar: 3}, // hidden
+			})
+			a.Calendars = cals
+			a.View, a.Year, a.Month = toolkit.AgendaMonth, 2026, 8
+			a.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 640, H: 360})
+			return a
+		}},
+		{"agenda-sidebar", 180, 140, func() toolkit.Widget {
+			// The calendar rail that sits beside an Agenda; "Personal" is hidden
+			// (hollow swatch + dimmed name).
+			sb := toolkit.NewAgendaSidebar([]toolkit.AgendaCalendar{
+				{Name: "Team", Color: toolkit.RGB(0x35, 0x84, 0xe4)},
+				{Name: "Eng", Color: toolkit.RGB(0x1e, 0x9e, 0x52)},
+				{Name: "Ops", Color: toolkit.RGB(0xe0, 0x50, 0x50)},
+				{Name: "Personal", Color: toolkit.RGB(0xc0, 0x80, 0xe0), Hidden: true},
+			})
+			sb.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 180, H: 140})
+			return sb
+		}},
+		{"agenda-editor", 640, 360, func() toolkit.Widget {
+			// The inline event editor opened on "Kickoff": title Entry + calendar
+			// picker (active calendar ringed).
+			cals := []toolkit.AgendaCalendar{
+				{Name: "Team", Color: toolkit.RGB(0x35, 0x84, 0xe4)},
+				{Name: "Eng", Color: toolkit.RGB(0x1e, 0x9e, 0x52)},
+				{Name: "Ops", Color: toolkit.RGB(0xe0, 0x50, 0x50)},
+			}
+			a := toolkit.NewAgenda([]toolkit.AgendaEvent{
+				{Title: "Kickoff", Y: 2026, M: 8, D: 3, Calendar: 0},
+				{Title: "Review", Y: 2026, M: 8, D: 12, Calendar: 1},
+			})
+			a.Calendars = cals
+			a.View, a.Year, a.Month = toolkit.AgendaMonth, 2026, 8
+			a.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 640, H: 360})
+			a.EditEvent(0)
+			return agendaWithEditor{a}
 		}},
 		{"areachart", 260, 180, func() toolkit.Widget {
 			c := toolkit.NewAreaChart([][]float64{
