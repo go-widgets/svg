@@ -138,7 +138,7 @@ func entries() []entry {
 			// the layout PopoverBounds computes when OpenUp is set.
 			d := toolkit.NewDropDown([]string{"UTF-8", "Latin-1", "Shift-JIS"}, 0)
 			d.OpenUp = true
-			d.Open = true
+			d.Open().Set(true)
 			ov := toolkit.NewOverlay(d)
 			ov.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 90})
 			d.SetBounds(toolkit.Rect{X: 0, Y: 60, W: 200, H: 30})
@@ -151,7 +151,7 @@ func entries() []entry {
 			body := toolkit.NewLabel("expanded body")
 			body.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 24})
 			e := toolkit.NewExpander("Details", body)
-			e.Expanded = true
+			e.Expanded().Set(true)
 			e.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 60})
 			return e
 		}},
@@ -166,7 +166,7 @@ func entries() []entry {
 		}},
 		{"radiobutton", 200, 28, func() toolkit.Widget {
 			r := toolkit.NewRadioButton("Enable option")
-			r.Checked = true
+			r.Checked().Set(true)
 			r.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 28})
 			return r
 		}},
@@ -205,7 +205,7 @@ func entries() []entry {
 		}},
 		{"tooltip", 160, 20, func() toolkit.Widget {
 			t := toolkit.NewTooltip("Undo (Ctrl+Z)")
-			t.Visible = true
+			t.Visible().Set(true)
 			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 160, H: 20})
 			return t
 		}},
@@ -280,7 +280,7 @@ func entries() []entry {
 				{"assets", "-", "dir"},
 			}
 			t := toolkit.NewTable(cols, rows)
-			t.Selected = 1
+			t.Selected().Set(1)
 			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 100})
 			return t
 		}},
@@ -296,7 +296,7 @@ func entries() []entry {
 				{"pears", "12", "OK"},
 			}
 			t := toolkit.NewTable(cols, rows)
-			t.Selected = 0
+			t.Selected().Set(0)
 			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 100})
 			return t
 		}},
@@ -317,14 +317,14 @@ func entries() []entry {
 		}},
 		{"toast", 260, 32, func() toolkit.Widget {
 			t := toolkit.NewToast("Copied to clipboard", toolkit.ToastSuccess)
-			t.Visible = true
+			t.Visible().Set(true)
 			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 32})
 			return t
 		}},
 		{"toast-corner", 260, 120, func() toolkit.Widget {
 			host := toolkit.Rect{X: 0, Y: 0, W: 260, H: 120}
 			t := toolkit.NewToast("Copied to clipboard", toolkit.ToastSuccess)
-			t.Visible = true
+			t.Visible().Set(true)
 			t.AnchorIn(host, toolkit.BottomRight, 0)
 			return t
 		}},
@@ -391,8 +391,8 @@ func entries() []entry {
 		}},
 		{"stat", 160, 80, func() toolkit.Widget {
 			s := toolkit.NewStat("Requests / min", "12,845")
-			s.Change = "+8.3%"
-			s.Trend = toolkit.StatUp
+			s.Change().Set("+8.3%")
+			s.Trend().Set(toolkit.StatUp)
 			s.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 160, H: 80})
 			return s
 		}},
@@ -438,7 +438,7 @@ func entries() []entry {
 		}},
 		{"progresscircle", 60, 60, func() toolkit.Widget {
 			p := toolkit.NewProgressCircle()
-			p.Fraction = 0.66
+			p.Fraction().Set(0.66)
 			p.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 60, H: 60})
 			return p
 		}},
@@ -466,7 +466,7 @@ func entries() []entry {
 		}},
 		{"spinner", 32, 32, func() toolkit.Widget {
 			s := toolkit.NewSpinner()
-			s.Active = true
+			s.Active().Set(true)
 			s.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 32, H: 32})
 			return s
 		}},
@@ -648,7 +648,7 @@ func entries() []entry {
 			// within the taller canvas.
 			d := toolkit.NewDatePicker(2026, 7, 10)
 			d.Cal.SetToday(2026, 7, 10)
-			d.Open = true
+			d.Open().Set(true)
 			d.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 170, H: toolkit.DatePickerFieldH()})
 			return d
 		}},
@@ -699,7 +699,7 @@ func entries() []entry {
 				{Title: "Advanced", Body: toolkit.NewLabel("advanced settings")},
 				{Title: "About", Body: toolkit.NewLabel("version 0.42.0")},
 			})
-			a.Expanded = 1
+			a.Expanded().Set(1)
 			a.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 160})
 			return a
 		}},
@@ -713,7 +713,7 @@ func entries() []entry {
 				slide("Slide two"),
 				slide("Slide three"),
 			})
-			c.Current = 1
+			c.Current().Set(1)
 			c.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 140})
 			return c
 		}},
@@ -735,7 +735,7 @@ func entries() []entry {
 				{Title: "Profile", Body: toolkit.NewLabel("profile details")},
 				{Title: "Review", Body: toolkit.NewLabel("review + submit")},
 			})
-			w.Current = 1
+			w.Current().Set(1)
 			w.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 200})
 			return w
 		}},
@@ -784,7 +784,7 @@ func entries() []entry {
 				{Title: "Kind"},
 			}
 			t := toolkit.NewTreeTable(cols, root)
-			t.Selected = root[0].Children[0]
+			t.Selected().Set(root[0].Children[0])
 			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 320, H: 160})
 			return t
 		}},
@@ -863,7 +863,7 @@ func entries() []entry {
 			}
 			t := toolkit.NewTable(cols, rows)
 			t.FrozenColumns = 1
-			t.Selected = 2
+			t.Selected().Set(2)
 			t.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 300, H: 110})
 			t.ScrollXTo(120) // scroll Q1/Q2 under the frozen Name column
 			return t
@@ -881,7 +881,7 @@ func entries() []entry {
 			pg.Add("Height", "768")
 			pg.Add("Title", "Untitled")
 			pg.Add("Visible", "true")
-			pg.Table().Selected = 2
+			pg.Table().Selected().Set(2)
 			pg.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 110})
 			// Open the editor on the "Title" value cell.
 			pg.OnEvent(toolkit.Event{Kind: toolkit.EventClick, X: 190, Y: toolkit.TableHeaderHeight + 2*toolkit.TableRowHeight + 2})
@@ -907,7 +907,7 @@ func entries() []entry {
 				{R: 0x50, G: 0xB0, B: 0x70, A: 255}, {R: 0xC0, G: 0x80, B: 0xE0, A: 255}}
 			lb := toolkit.NewListBox([]string{"Reddit", "Hacker News", "Lobsters", "GitHub"})
 			lb.RowHeight = 32
-			lb.Selected = 1
+			lb.Selected().Set(1)
 			lb.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 220, H: 128})
 			lb.ItemRenderer = func(p painter.Painter, theme *toolkit.Theme, rc toolkit.Rect, i int, item string, sel bool, ink toolkit.RGBA) {
 				p.FillRect(painter.Rect{X: rc.X + 8, Y: rc.Y + rc.H/2 - 6, W: 12, H: 12}, swatch[i])
@@ -935,7 +935,7 @@ func entries() []entry {
 				{Label: "Docs", Start: 7, End: 10, Fill: toolkit.RGB(0xf5, 0xa6, 0x23)},
 				{Label: "Ship", Start: 9, End: 11, Fill: toolkit.RGB(0xc0, 0x39, 0x2b)},
 			})
-			g.Selected = 1
+			g.Selected().Set(1)
 			g.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 520, H: 140})
 			return g
 		}},
@@ -953,8 +953,8 @@ func entries() []entry {
 					{Title: "Sencha layouts", Subtitle: "shipped", Accent: toolkit.RGB(0x50, 0xb0, 0x70)},
 				}},
 			})
-			k.SelectedCol = 1
-			k.SelectedCard = 0
+			k.SelectedCol().Set(1)
+			k.SelectedCard().Set(0)
 			k.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 600, H: 220})
 			return k
 		}},
@@ -981,7 +981,7 @@ func entries() []entry {
 				{Title: "Release", Day: 4, StartMin: 16 * 60, EndMin: 17*60 + 30,
 					Fill: toolkit.RGB(0xc0, 0x39, 0x2b)},
 			})
-			a.Selected = 1
+			a.Selected().Set(1)
 			a.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 720, H: 340})
 			return a
 		}},
@@ -993,7 +993,7 @@ func entries() []entry {
 				{Title: "Retro", Y: 2026, M: 8, D: 20},
 				{Title: "Release", Y: 2026, M: 8, D: 28, Fill: toolkit.RGB(0xc0, 0x39, 0x2b)},
 			})
-			a.View = toolkit.AgendaMonth
+			a.View().Set(toolkit.AgendaMonth)
 			a.Year = 2026
 			a.Month = 8
 			a.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 640, H: 360})
@@ -1015,7 +1015,8 @@ func entries() []entry {
 				{Title: "PTO", Y: 2026, M: 8, D: 24, Calendar: 3}, // hidden
 			})
 			a.Calendars = cals
-			a.View, a.Year, a.Month = toolkit.AgendaMonth, 2026, 8
+			a.View().Set(toolkit.AgendaMonth)
+			a.Year, a.Month = 2026, 8
 			a.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 640, H: 360})
 			return a
 		}},
@@ -1044,7 +1045,8 @@ func entries() []entry {
 				{Title: "Review", Y: 2026, M: 8, D: 12, Calendar: 1},
 			})
 			a.Calendars = cals
-			a.View, a.Year, a.Month = toolkit.AgendaMonth, 2026, 8
+			a.View().Set(toolkit.AgendaMonth)
+			a.Year, a.Month = 2026, 8
 			a.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 640, H: 360})
 			a.EditEvent(0)
 			return agendaWithEditor{a}
