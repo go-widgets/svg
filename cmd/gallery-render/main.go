@@ -94,7 +94,7 @@ func (w agendaWithEditor) Draw(p painter.Painter, theme *toolkit.Theme) {
 // Kept in a separate function so tests can drive the whole render
 // loop through a temp directory.
 func entries() []entry {
-	label := &toolkit.Label{Text: "Label text"}
+	label := toolkit.NewLabel("Label text")
 	return []entry{
 		{"button", 200, 40, func() toolkit.Widget {
 			b := toolkit.NewButton("Click me", nil)
