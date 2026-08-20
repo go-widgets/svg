@@ -742,8 +742,8 @@ func entries() []entry {
 		{"date-range-picker", 190, 190, func() toolkit.Widget {
 			d := toolkit.NewDateRangePicker(2026, 7)
 			d.Cal.SetToday(2026, 7, 6)
-			d.Start = toolkit.Date{Y: 2026, M: 7, D: 10}
-			d.End = toolkit.Date{Y: 2026, M: 7, D: 18}
+			d.Start().Set(toolkit.Date{Y: 2026, M: 7, D: 10})
+			d.End().Set(toolkit.Date{Y: 2026, M: 7, D: 18})
 			d.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 190, H: 190})
 			return d
 		}},
