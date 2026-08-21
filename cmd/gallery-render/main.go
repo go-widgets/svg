@@ -117,7 +117,7 @@ func entries() []entry {
 		}},
 		{"progressbar", 240, 24, func() toolkit.Widget {
 			p := toolkit.NewProgressBar()
-			p.Fraction = 0.66
+			p.Fraction().Set(0.66)
 			p.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 240, H: 24})
 			return p
 		}},
@@ -192,14 +192,14 @@ func entries() []entry {
 		}},
 		{"notification", 260, 32, func() toolkit.Widget {
 			n := toolkit.NewNotification("Saved successfully")
-			n.Visible = true
+			n.Visible().Set(true)
 			n.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 260, H: 32})
 			return n
 		}},
 		{"notification-corner", 260, 120, func() toolkit.Widget {
 			host := toolkit.Rect{X: 0, Y: 0, W: 260, H: 120}
 			n := toolkit.NewNotification("Reconnected")
-			n.Visible = true
+			n.Visible().Set(true)
 			n.AnchorIn(host, toolkit.TopLeft)
 			return n
 		}},
@@ -339,7 +339,7 @@ func entries() []entry {
 			child.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 180, H: 24})
 			p := toolkit.NewPopover(child)
 			p.Title = "Menu"
-			p.Visible = true
+			p.Visible().Set(true)
 			p.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 80})
 			return p
 		}},
@@ -460,7 +460,7 @@ func entries() []entry {
 		}},
 		{"levelbar", 200, 20, func() toolkit.Widget {
 			l := toolkit.NewLevelBar(10)
-			l.Value = 7
+			l.Value().Set(7)
 			l.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 20})
 			return l
 		}},
@@ -889,7 +889,7 @@ func entries() []entry {
 		}},
 		{"loadmask", 200, 120, func() toolkit.Widget {
 			m := toolkit.NewLoadMask("Loading…")
-			m.Active = true
+			m.Active().Set(true)
 			m.Tick(0.12)
 			m.SetBounds(toolkit.Rect{X: 0, Y: 0, W: 200, H: 120})
 			return m
