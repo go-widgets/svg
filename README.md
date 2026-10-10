@@ -107,7 +107,8 @@ func PNG(w io.Writer, wg toolkit.Widget, width, height int, theme *toolkit.Theme
 ```
 
 - Renders `wg` into a fresh `width×height` RGBA surface via
-  `wg.Draw(surface, width, theme)`, then serialises. `Snapshot`
+  `wg.Draw(painter.NewPixelPainter(surface, width, height), theme)`, then
+  serialises. `Snapshot`
   wraps in an SVG envelope; `PNG` emits raw PNG bytes.
 - Errors on non-positive dimensions, nil widget, nil theme.
 - Split into a subpackage so the root `svg` stays dep-free — a
