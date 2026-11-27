@@ -132,9 +132,6 @@ func parseFrame(data []byte) (*frameTree, error) {
 		}
 		switch t := tok.(type) {
 		case xml.StartElement:
-			if root != nil && len(stack) == 0 {
-				return nil, bad("content after the root element")
-			}
 			n, err := startElem(ft, root == nil, t, len(stack))
 			if err != nil {
 				return nil, err
@@ -187,6 +184,9 @@ func parseFrame(data []byte) (*frameTree, error) {
 }
 
 func startElem(ft *frameTree, isRoot bool, t xml.StartElement, depth int) (*pnode, error) {
+	if !isRoot && depth == 0 { // the root is closed; the decoder accepts a second top-level element
+		return nil, bad("content after the root element")
+	}
 	if depth >= maxDepth {
 		return nil, bad("nesting deeper than %d", maxDepth)
 	}

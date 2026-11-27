@@ -288,7 +288,8 @@ func TestContentAfterRoot(t *testing.T) {
 		"g after root":   head + tail + `<g/>`,
 		"svg after root": head + tail + head + tail,
 	} {
-		if _, err := Animate([]Frame{{SVG: []byte(doc)}}, Options{}); !errors.Is(err, ErrFrame) {
+		_, err := Animate([]Frame{{SVG: []byte(doc)}}, Options{})
+		if !errors.Is(err, ErrFrame) || !strings.Contains(err.Error(), "content after the root element") {
 			t.Errorf("%s: err %v", name, err)
 		}
 	}
