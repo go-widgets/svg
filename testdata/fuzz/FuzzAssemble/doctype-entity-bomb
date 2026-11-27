@@ -1,0 +1,5 @@
+go test fuzz v1
+[]byte("<!DOCTYPE svg [<!ENTITY a \"aaaa\"><!ENTITY b \"&a;&a;&a;&a;\">]><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\" viewBox=\"0 0 1 1\"><g><title>&b;</title></g></svg>")
+[]byte("<?xml version=\"1.0\"?><svg/>")
+uint16(1)
+string("")

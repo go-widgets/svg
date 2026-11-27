@@ -12,7 +12,12 @@
 composition, or any other pixel producer) into a portable,
 self-contained SVG document.
 
-Pure Go, stdlib only, BSD-3-Clause. 100% statement coverage.
+`Animate` / `Assemble`: stitch a timed list of SVG frames (for example
+from painter's `svgrec` recorder) into ONE animated SVG, sharing every
+subtree that does not change between frames.
+
+Pure Go, BSD-3-Clause, no dependency in the library itself (the tests use
+painter's `svgrec`). 100% statement coverage.
 
 ## Why
 
@@ -81,6 +86,49 @@ widget.PNG(p, btn, 200, 40, toolkit.DefaultLight())
 
 The `label` argument on `Snapshot` becomes the SVG's `<title>` +
 `aria-label` for a11y + previewer tooltips. Pass `""` to omit.
+
+## Animated SVG
+
+```go
+frames := []svg.Frame{
+    {At: 0, SVG: first},                      // svgrec output
+    {At: 100 * time.Millisecond, SVG: second},
+}
+out, err := svg.Animate(frames, svg.Options{End: time.Second, Title: "demo"})
+```
+
+`Assemble` returns a `Document` (`SVG()`, `Slots()`, `Stats()`,
+`Frame(i)`, `Video(...)`); `Animate` is the one-call form.
+
+- **Structure sharing.** Frames are parsed into a hash-consed tree:
+  identical subtrees are stored once in `<defs>` and referenced with
+  `<use>` (SVG 2 struct, 5.3.2 and 5.5); adjacent identical frames
+  merge into one interval; clip paths are deduplicated globally.
+  A `<g id>` is used rather than `<symbol>`, which is clipped to its
+  viewport (5.4.2).
+- **Timing.** Pure CSS: one `@keyframes` per picture toggling
+  `visibility`, `animation-iteration-count: infinite`
+  (CSS Animations 1, section 3). `prefers-reduced-motion` stops it.
+- **Safe on hostile input.** Frames go through a strict allowlist parse
+  (`g rect path image title clipPath`; no doctype, script, foreign
+  namespaces, external `href`); output is escaped. Bounds:
+  `DefaultMaxFrames` 4096, `DefaultMaxBytes` 32 MiB (hard 65536 /
+  256 MiB), 10 min, 16384 px; refusals are typed errors (`ErrTooLarge`,
+  `ErrTiming`, ...). Fuzzed (`FuzzAssemble`, `FuzzTiming`).
+- **WebM.** `Document.Video` drives two interfaces, `Rasterizer`
+  and `VideoEncoder`; no encoder is bundled (no pure-Go VP8/VP9 exists
+  yet).
+
+Measured on 60 frames of 1000x700 from a real recorder (bytes):
+
+| Scenario | Input | Naive | Assembled | Gain |
+|---|---:|---:|---:|---:|
+| one live region | 1486660 | 1480754 | 64772 | 22.9x |
+| static, no cursor | 1459380 | 1453653 | 24204 | 60.1x |
+| every row changes | 1486660 | 1480754 | 218224 | 6.8x |
+
+About 27 ms and 22 MB allocated per 60-frame assembly (M4 Max, one core,
+machine under load: times indicative, allocation counts exact).
 
 ## API
 
