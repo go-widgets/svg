@@ -25,8 +25,6 @@ github.com/go-typeset/bidi v0.3.1 h1:fsTa0b9txt2SkH7M55EZ06+q3N9C4O0Oerf+SPLLGFs
 github.com/go-typeset/bidi v0.3.1/go.mod h1:ct3cmYT8Qt1FGJQ+2QaakrUxqaP4ZysgdQQg2ym5+Xo=
 github.com/go-widgets/mvvm v0.15.0 h1:VvZiLB7gm+5CIEeQH3GNI53ytUndzOznT/fJvaG8hOQ=
 github.com/go-widgets/mvvm v0.15.0/go.mod h1:ZJj5M8zDg/gdzcvdWnJgZj/fcV0qe84fALq+EQVzUOM=
-github.com/go-widgets/painter v0.17.1 h1:inOmnCGSiHd4oZx7Zm7PJRDWWSEopnEnvDKEeFu9iT0=
-github.com/go-widgets/painter v0.17.1/go.mod h1:8kERcZUoWNyLIas1NsMWiYynvvyx+hcB2cNIh0Bx0yc=
 github.com/go-widgets/painter v0.21.0 h1:UMvg+lm0hjy96JoI0qHrho6vupJnxuxZuJSmwISRgBA=
 github.com/go-widgets/painter v0.21.0/go.mod h1:uwNd4vsDklrWHtRaq+/Y65/qlw6FWfhXtlWvke1fulw=
 github.com/go-widgets/textinput v0.1.0 h1:ifx1RjbPIWtlokoBLV1ZwlH+0CeixoMbswlqhNvYNmw=
