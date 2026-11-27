@@ -281,6 +281,19 @@ func TestHostileTextIsEscaped(t *testing.T) {
 	}
 }
 
+// TestContentAfterRoot: a well-formed second top-level element is refused by
+// the parser's own check, not by the XML decoder (which accepts it).
+func TestContentAfterRoot(t *testing.T) {
+	for name, doc := range map[string]string{
+		"g after root":   head + tail + `<g/>`,
+		"svg after root": head + tail + head + tail,
+	} {
+		if _, err := Animate([]Frame{{SVG: []byte(doc)}}, Options{}); !errors.Is(err, ErrFrame) {
+			t.Errorf("%s: err %v", name, err)
+		}
+	}
+}
+
 func TestFrameVocabulary(t *testing.T) {
 	cp := `<clipPath id="c0"><rect x="0" y="0" width="5" height="5"/></clipPath>`
 	for name, body := range map[string]string{
@@ -291,7 +304,8 @@ func TestFrameVocabulary(t *testing.T) {
 		"onload":         `<rect onload="x()"/>`,
 		"xlink":          `<image xlink:href="data:image/png;base64,AA=="/>`,
 		"bad clip ref":   `<g clip-path="url(#a b)"/>`,
-		"trailing g":     `</svg><g/>`,
+		"bare clip id":   cp + `<g clip-path="c0"/>`,
+		"open clip ref":  cp + `<g clip-path="url(#c0"/>`,
 		"href js":        `<image href="javascript:alert(1)"/>`,
 		"href on rect":   `<rect href="data:image/png;base64,AA=="/>`,
 		"href non-b64":   `<image href="data:image/png;base64,A!A"/>`,

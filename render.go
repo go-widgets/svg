@@ -70,17 +70,14 @@ func (r *renderer) decide() {
 		open, closeT := c.tags("")
 		l := len(open) + len(closeT)
 		for _, k := range c.kids {
-			if r.def[k] {
-				l += len(useMarkup(r.name[k]))
-			} else {
-				l += inl[k]
-			}
+			l += inl[k] // a shared child counts as its <use>, set below
 		}
 		inl[i] = l
 		cand := "s" + strconv.FormatInt(int64(defs), 36)
 		use := len(useMarkup(cand))
 		if refs[i] > 1 && (refs[i]-1)*(l-use) > 14+len(cand) {
 			r.def[i], r.name[i] = true, cand
+			inl[i] = use
 			defs++
 		}
 	}
