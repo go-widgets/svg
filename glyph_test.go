@@ -92,6 +92,7 @@ func TestGlyphRefusals(t *testing.T) {
 		"use with kids":      symA + `<use href="#gaaaa"><title>x</title></use>`,
 		"bad x":              `<defs>` + symA + `</defs><use href="#gaaaa" x="abc"/>`,
 		"huge x":             `<defs>` + symA + `</defs><use href="#gaaaa" x="1e12"/>`,
+		"href without #":     `<defs>` + symA + `</defs><use href="gaaaa" x="0" y="0"/>`,
 		"external href":      `<defs>` + symA + `</defs><use href="http://x/#a"/>`,
 		"symbol in symbol":   `<defs><symbol id="a"><symbol id="b"><path d="M0 0Z"/></symbol></symbol></defs>`,
 		"inner use in defs":  `<defs><use href="#a"/></defs>`,

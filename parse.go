@@ -111,10 +111,7 @@ func checkAttr(elem string, a xml.Attr) error {
 		}
 	case "href":
 		if elem == "use" {
-			if id, ok := strings.CutPrefix(v, "#"); !ok || !validID(id) {
-				return bad("href %q on <use>", v)
-			}
-			break
+			break // that it names a declared symbol is checked when the uses resolve (stripClips)
 		}
 		b64, ok := strings.CutPrefix(v, pngURI)
 		if elem != "image" || !ok || !safeChars(b64, "+/=") {
@@ -363,7 +360,7 @@ func stripClips(ft *frameTree) error {
 					}
 				}
 				if a.k == "href" && n.name == "use" {
-					if id := strings.TrimPrefix(a.v, "#"); ft.syms[id] == nil {
+					if id, ok := strings.CutPrefix(a.v, "#"); !ok || ft.syms[id] == nil {
 						return nil, bad("use references missing symbol %q", id)
 					}
 					if _, _, ok := useXY(n.attrs); !ok {
