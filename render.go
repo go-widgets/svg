@@ -45,6 +45,7 @@ func (c *cnode) tags(id string) (open, closeT string) {
 }
 
 type renderer struct {
+	syms []string // glyph symbol path data; set only when a still expands <use>
 	d    *dag
 	def  []bool
 	name []string
@@ -87,6 +88,9 @@ func (r *renderer) decide() {
 // unless full is set (a standalone frame has no <defs> to reference).
 func (r *renderer) inline(i int, id string, full bool) {
 	c := &r.d.nodes[i]
+	if full && c.name == "use" && r.expand(c) {
+		return
+	}
 	open, closeT := c.tags(id)
 	r.buf.WriteString(open)
 	for _, k := range c.kids {
@@ -97,6 +101,33 @@ func (r *renderer) inline(i int, id string, full bool) {
 		}
 	}
 	r.buf.WriteString(closeT)
+}
+
+// expand writes a glyph <use> as the <path> it stands for, the symbol's data
+// moved to the use's x and y, so a still stays in svgrec's vocabulary and a
+// rasteriser that does not know <use> draws the same shape. false when c is not
+// a glyph use (the parser guarantees it is).
+func (r *renderer) expand(c *cnode) bool {
+	var idx = -1
+	for _, a := range c.attrs {
+		if a.k == "href" && len(a.v) > 2 {
+			if n, err := strconv.Atoi(a.v[2:]); err == nil && n >= 0 && n < len(r.syms) {
+				idx = n
+			}
+		}
+	}
+	x, y, ok := useXY(c.attrs)
+	if idx < 0 || !ok {
+		return false
+	}
+	d, ok := shiftPath(r.syms[idx], x, y)
+	if !ok {
+		return false
+	}
+	var b bytes.Buffer
+	writeAttr(&b, "d", d)
+	r.buf.WriteString("<path" + b.String() + "/>")
+	return true
 }
 
 func (doc *Document) header(r *renderer, dw, dh int) {
@@ -114,6 +145,14 @@ func (doc *Document) header(r *renderer, dw, dh int) {
 func (doc *Document) clipDefs(r *renderer) {
 	for i, c := range doc.clips {
 		r.buf.WriteString(`<clipPath id="k` + strconv.Itoa(i) + `">` + c + "</clipPath>\n")
+	}
+}
+
+func (doc *Document) symbolDefs(r *renderer) {
+	for i, d := range doc.syms {
+		var b bytes.Buffer
+		writeAttr(&b, "d", d)
+		r.buf.WriteString(`<symbol id="y` + strconv.Itoa(i) + `" overflow="visible"><path` + b.String() + "/></symbol>\n")
 	}
 }
 
@@ -137,9 +176,10 @@ func (doc *Document) render(dw, dh int, title string) {
 		}
 	}
 	doc.stats.Nodes, doc.stats.Shared = len(doc.d.nodes), shared
-	if len(doc.clips) > 0 || shared > 0 {
+	if len(doc.clips) > 0 || len(doc.syms) > 0 || shared > 0 {
 		r.buf.WriteString("<defs>\n")
 		doc.clipDefs(r)
+		doc.symbolDefs(r)
 		for i, d := range r.def {
 			if d {
 				r.inline(i, r.name[i], false)
@@ -224,7 +264,7 @@ func (doc *Document) Frame(i int) ([]byte, error) {
 }
 
 func (doc *Document) still(i int) []byte {
-	r := &renderer{d: doc.d}
+	r := &renderer{d: doc.d, syms: doc.syms}
 	r.def, r.name = make([]bool, len(doc.d.nodes)), make([]string, len(doc.d.nodes))
 	doc.header(r, doc.stats.Width, doc.stats.Height)
 	doc.clipDefs(r) // clipPath is never rendered itself: no <defs> needed, and the still stays svgrec-shaped
