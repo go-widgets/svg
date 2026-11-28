@@ -91,6 +91,7 @@ type Stats struct {
 	Nodes         int // distinct element subtrees
 	Shared        int // subtrees emitted once in <defs> and referenced
 	Clips         int // distinct clipPaths
+	Symbols       int // distinct glyph symbols
 	InputBytes    int
 	OutputBytes   int
 	Width, Height int // recorded canvas
@@ -104,6 +105,7 @@ type Document struct {
 	pictures []int // root node id per picture
 	d        *dag
 	clips    []string
+	syms     []string // glyph symbol path data, id "y"+index
 	total    time.Duration
 }
 
@@ -133,7 +135,10 @@ func Animate(frames []Frame, o Options) ([]byte, error) {
 //
 // Every distinct element subtree is emitted once, in <defs> as a <g id>, and
 // referenced with <use href> (SVG 2, 5.3.2 and 5.5); a group is used instead
-// of <symbol> because a symbol is clipped to its viewport (5.4.2). Long
+// of <symbol> because a symbol is clipped to its viewport (5.4.2). The one
+// exception is the glyph symbol of svgrec's TextGlyphs: it is declared with
+// overflow="visible", so nothing is clipped, and it is merged by path data
+// across frames into one <symbol id="yN"> in <defs>. Long
 // sibling lists are cut at content-defined boundaries, so a frame that changes
 // one region costs about that region. Each distinct picture sits in a <g
 // class="f">, hidden by default, and a CSS @keyframes per picture flips its
@@ -150,7 +155,7 @@ func Assemble(frames []Frame, o Options) (*Document, error) {
 	for _, f := range frames {
 		in += len(f.SVG)
 	}
-	asm := &assembler{d: newDAG(!o.noDedupe), clipIdx: map[string]int{}, dedupe: !o.noDedupe}
+	asm := &assembler{d: newDAG(!o.noDedupe), clipIdx: map[string]int{}, symIdx: map[string]int{}, dedupe: !o.noDedupe}
 	var slots []Slot
 	var pictures []int
 	byRoot := map[int]int{}
@@ -198,9 +203,9 @@ func Assemble(frames []Frame, o Options) (*Document, error) {
 		}
 		slots[i].Duration = next - slots[i].Start
 	}
-	doc := &Document{slots: slots, pictures: pictures, d: asm.d, clips: asm.clips, total: total}
+	doc := &Document{slots: slots, pictures: pictures, d: asm.d, clips: asm.clips, syms: asm.syms, total: total}
 	doc.stats = Stats{Frames: len(frames), Slots: len(slots), Pictures: len(pictures),
-		Clips: len(asm.clips), InputBytes: in, Width: w, Height: h}
+		Clips: len(asm.clips), Symbols: len(asm.syms), InputBytes: in, Width: w, Height: h}
 	dw, dh, err := displaySize(w, h, o)
 	if err != nil {
 		return nil, err
@@ -275,7 +280,22 @@ type assembler struct {
 	d       *dag
 	clips   []string // clipPath markup by index
 	clipIdx map[string]int
+	syms    []string // glyph symbol path data by index
+	symIdx  map[string]int
 	dedupe  bool
+}
+
+// symID interns the glyph symbol s, across frames: two frames recorded apart
+// that draw the same glyph share one <symbol>.
+func (a *assembler) symID(s *pnode) string {
+	d := symbolData(s)
+	i, ok := a.symIdx[d]
+	if !ok || !a.dedupe {
+		i = len(a.syms)
+		a.syms = append(a.syms, d)
+		a.symIdx[d] = i
+	}
+	return "y" + strconv.Itoa(i)
 }
 
 func (a *assembler) clipID(c *pnode) string {
@@ -329,6 +349,9 @@ func (a *assembler) build(ft *frameTree, p *pnode) int {
 		if at.k == "clip-path" {
 			id, _ := clipRef(at.v)
 			at.v = "url(#" + a.clipID(ft.clips[id]) + ")"
+		}
+		if at.k == "href" && p.name == "use" {
+			at.v = "#" + a.symID(ft.syms[strings.TrimPrefix(at.v, "#")])
 		}
 		c.attrs = append(c.attrs, at)
 	}

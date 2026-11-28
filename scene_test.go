@@ -73,7 +73,7 @@ func scenario(tb testing.TB, frames int, mode string) []Frame {
 func vocabulary(tb testing.TB, data []byte) (elements int) {
 	tb.Helper()
 	ok := map[string]bool{"svg": true, "g": true, "rect": true, "path": true, "image": true,
-		"title": true, "clipPath": true, "defs": true, "use": true, "style": true}
+		"title": true, "clipPath": true, "defs": true, "use": true, "style": true, "symbol": true}
 	dec := xml.NewDecoder(bytes.NewReader(data))
 	for {
 		tok, err := dec.Token()

@@ -43,6 +43,7 @@ type frameTree struct {
 	w, h  int
 	kids  []*pnode
 	clips map[string]*pnode
+	syms  map[string]*pnode // glyph symbols declared in <defs>, by their original id
 }
 
 // attrs allowed anywhere; the vocabulary is that of go-widgets/painter's
@@ -54,10 +55,15 @@ var allowedAttr = map[string]bool{
 	"stroke-width": true, "stroke-opacity": true, "stroke-linecap": true,
 	"stroke-linejoin": true, "d": true, "clip-path": true,
 	"preserveAspectRatio": true, "image-rendering": true, "href": true, "id": true,
+	"overflow": true,
 }
 
+// allowedElem adds, to svgrec's drawing elements, the glyph-symbol vocabulary of
+// svgrec.Recorder.TextGlyphs: <defs> holding <symbol>s, each one <path>, drawn
+// by <use> (SVG 2, https://www.w3.org/TR/SVG2/struct.html 5.3, 5.5, 5.6).
 var allowedElem = map[string]bool{
 	"g": true, "rect": true, "path": true, "image": true, "title": true, "clipPath": true,
+	"defs": true, "symbol": true, "use": true,
 }
 
 func bad(format string, a ...any) error {
@@ -92,14 +98,21 @@ func checkAttr(elem string, a xml.Attr) error {
 	}
 	switch k {
 	case "id":
-		if elem != "clipPath" || !validID(v) {
+		if (elem != "clipPath" && elem != "symbol") || !validID(v) {
 			return bad("id on <%s>", elem)
+		}
+	case "overflow":
+		if elem != "symbol" || v != "visible" {
+			return bad("overflow %q on <%s>", v, elem)
 		}
 	case "clip-path":
 		if _, ok := clipRef(v); !ok || elem != "g" {
 			return bad("clip-path on <%s>", elem)
 		}
 	case "href":
+		if elem == "use" {
+			break // that it names a declared symbol is checked when the uses resolve (stripClips)
+		}
 		b64, ok := strings.CutPrefix(v, pngURI)
 		if elem != "image" || !ok || !safeChars(b64, "+/=") {
 			return bad("href on <%s>", elem)
@@ -119,7 +132,7 @@ func isSpace(b []byte) bool { return len(bytes.TrimLeft(b, " \t\r\n")) == 0 }
 // content are refused.
 func parseFrame(data []byte) (*frameTree, error) {
 	dec := xml.NewDecoder(bytes.NewReader(data))
-	ft := &frameTree{clips: map[string]*pnode{}}
+	ft := &frameTree{clips: map[string]*pnode{}, syms: map[string]*pnode{}}
 	var stack []*pnode // open elements; clipPath and title are on it too
 	var root *pnode
 	for {
@@ -143,14 +156,22 @@ func parseFrame(data []byte) (*frameTree, error) {
 				if top.name == "title" {
 					return nil, bad("element inside <title>")
 				}
+				if err := checkParent(top, n); err != nil {
+					return nil, err
+				}
 				top.kids = append(top.kids, n)
 			}
 			stack = append(stack, n)
 		case xml.EndElement:
 			n := stack[len(stack)-1]
 			stack = stack[:len(stack)-1]
-			if n.name == "clipPath" {
+			switch n.name {
+			case "clipPath":
 				if err := declareClip(ft, n); err != nil {
+					return nil, err
+				}
+			case "symbol":
+				if err := declareSymbol(ft, n); err != nil {
 					return nil, err
 				}
 			}
@@ -265,14 +286,70 @@ func declareClip(ft *frameTree, n *pnode) error {
 	return nil
 }
 
-// stripClips removes every clipPath from the tree (they are hoisted into the
-// shared <defs>) and checks that every reference resolves.
+// checkParent refuses an element in a place the glyph-symbol vocabulary does
+// not allow: <defs> only directly in <svg>, holding only <symbol>s; a <symbol>
+// only in <defs>, holding only <path>; a <use> holding nothing.
+func checkParent(top, n *pnode) error {
+	switch {
+	case top.name == "defs" && n.name != "symbol":
+		return bad("<%s> inside <defs>", n.name)
+	case top.name == "symbol" && n.name != "path":
+		return bad("<%s> inside <symbol>", n.name)
+	case top.name == "use":
+		return bad("<%s> inside <use>", n.name)
+	case n.name == "defs" && top.name != "svg":
+		return bad("<defs> inside <%s>", top.name)
+	case n.name == "symbol" && top.name != "defs":
+		return bad("<symbol> inside <%s>", top.name)
+	}
+	return nil
+}
+
+// declareSymbol records a glyph symbol: one <path> whose data is in the grammar
+// shiftPath reads, so a still can expand every <use> of it.
+func declareSymbol(ft *frameTree, n *pnode) error {
+	var id string
+	for _, a := range n.attrs {
+		if a.k == "id" {
+			id = a.v
+		}
+	}
+	if id == "" {
+		return bad("symbol without id")
+	}
+	if _, dup := ft.syms[id]; dup {
+		return bad("duplicate symbol id %q", id)
+	}
+	if len(n.kids) != 1 {
+		return bad("symbol %q holds %d elements, want one path", id, len(n.kids))
+	}
+	if d := symbolData(n); d == "" {
+		return bad("symbol %q has no path data", id)
+	} else if _, ok := shiftPath(d, 0, 0); !ok {
+		return bad("symbol %q: path data outside absolute M, L, Q, C, Z", id)
+	}
+	ft.syms[id] = n
+	return nil
+}
+
+// symbolData is the d attribute of a symbol's path, "" when it has none.
+func symbolData(n *pnode) string {
+	for _, a := range n.kids[0].attrs {
+		if a.k == "d" {
+			return a.v
+		}
+	}
+	return ""
+}
+
+// stripClips removes every clipPath and <defs> from the tree (clips and symbols
+// are hoisted into the shared <defs>) and checks that every reference resolves.
 func stripClips(ft *frameTree) error {
 	var walk func(ns []*pnode) ([]*pnode, error)
 	walk = func(ns []*pnode) ([]*pnode, error) {
 		out := ns[:0:0]
 		for _, n := range ns {
-			if n.name == "clipPath" {
+			if n.name == "clipPath" || n.name == "defs" {
 				continue
 			}
 			for _, a := range n.attrs {
@@ -280,6 +357,14 @@ func stripClips(ft *frameTree) error {
 					id, _ := clipRef(a.v)
 					if ft.clips[id] == nil {
 						return nil, bad("clip-path references missing %q", id)
+					}
+				}
+				if a.k == "href" && n.name == "use" {
+					if id, ok := strings.CutPrefix(a.v, "#"); !ok || ft.syms[id] == nil {
+						return nil, bad("use references missing symbol %q", id)
+					}
+					if _, _, ok := useXY(n.attrs); !ok {
+						return nil, bad("use with a position that is not a number within +-%d", maxPathCoord)
 					}
 				}
 			}

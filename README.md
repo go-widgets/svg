@@ -104,13 +104,20 @@ out, err := svg.Animate(frames, svg.Options{End: time.Second, Title: "demo"})
   identical subtrees are stored once in `<defs>` and referenced with
   `<use>` (SVG 2 struct, 5.3.2 and 5.5); adjacent identical frames
   merge into one interval; clip paths are deduplicated globally.
-  A `<g id>` is used rather than `<symbol>`, which is clipped to its
-  viewport (5.4.2).
+  Shared subtrees use a `<g id>` rather than `<symbol>`, which is clipped
+  to its viewport (5.4.2).
+- **Glyph symbols.** Frames from `svgrec.TextGlyphs` define each distinct
+  glyph outline once as a `<symbol overflow="visible">` holding one
+  absolute-command `<path>`, and draw it with `<use href x y>`. The
+  assembly merges identical outlines across frames; a still expands each
+  `<use>` back to the shifted `<path>`, so it stays in svgrec's vocabulary.
+  Thirty frames of text shrink from 1276009 to 93754 bytes (gzip 329796
+  to 12237).
 - **Timing.** Pure CSS: one `@keyframes` per picture toggling
   `visibility`, `animation-iteration-count: infinite`
   (CSS Animations 1, section 3). `prefers-reduced-motion` stops it.
 - **Safe on hostile input.** Frames go through a strict allowlist parse
-  (`g rect path image title clipPath`; no doctype, script, foreign
+  (`g rect path image title clipPath defs symbol use`; no doctype, script, foreign
   namespaces, external `href`); output is escaped. Bounds:
   `DefaultMaxFrames` 4096, `DefaultMaxBytes` 32 MiB (hard 65536 /
   256 MiB), 10 min, 16384 px; refusals are typed errors (`ErrTooLarge`,
